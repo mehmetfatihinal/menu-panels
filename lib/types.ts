@@ -26,6 +26,7 @@ export type Menu = {
     name: string;
     tagline: string;
     currency: string;
+    logoUrl?: string;
   };
   categories: Category[];
 };

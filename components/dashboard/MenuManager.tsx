@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Category, Menu, MenuItem } from "@/lib/types";
+import UploadButton from "./UploadButton";
 
 type ProductDraft = {
   categoryId: string;
@@ -278,12 +279,17 @@ export default function MenuManager() {
               </button>
             </Field>
           </div>
-          <Field label="Görsel URL">
+          <Field label="Görsel (URL yapıştır veya bilgisayardan yükle)">
             <input
               value={product.image}
               onChange={(e) => setProduct({ ...product, image: e.target.value })}
               className="input"
               placeholder="https://…"
+            />
+            <UploadButton
+              accept="image/*"
+              label="Bilgisayardan görsel yükle"
+              onUploaded={(url) => setProduct({ ...product, image: url })}
             />
           </Field>
           {product.image && (
@@ -325,21 +331,48 @@ export default function MenuManager() {
               placeholder="ör. Tatlılar"
             />
           </Field>
-          <Field label="Kapak görseli URL">
+          <Field label="Kapak görseli (URL veya bilgisayardan yükle)">
             <input
               value={category.coverSrc}
               onChange={(e) => setCategory({ ...category, coverSrc: e.target.value })}
               className="input"
               placeholder="https://…"
             />
+            <UploadButton
+              accept="image/*"
+              label="Bilgisayardan görsel yükle"
+              onUploaded={(url) => setCategory({ ...category, coverSrc: url })}
+            />
+            {category.coverSrc && (
+              <img
+                src={category.coverSrc}
+                alt=""
+                className="mt-2 h-20 w-full rounded-lg object-cover"
+              />
+            )}
           </Field>
-          <Field label="Kapak videosu URL (opsiyonel — büyüyen menü)">
+          <Field label="Kapak videosu (opsiyonel — büyüyen menü)">
             <input
               value={category.coverVideo}
               onChange={(e) => setCategory({ ...category, coverVideo: e.target.value })}
               className="input"
               placeholder="https://… .mp4"
             />
+            <UploadButton
+              accept="video/*"
+              label="Bilgisayardan video yükle"
+              onUploaded={(url) => setCategory({ ...category, coverVideo: url })}
+            />
+            {category.coverVideo && (
+              <video
+                src={category.coverVideo}
+                muted
+                loop
+                autoPlay
+                playsInline
+                className="mt-2 h-20 w-full rounded-lg object-cover"
+              />
+            )}
           </Field>
           <div className="mt-4 flex gap-2">
             <button

@@ -22,18 +22,28 @@ const MenuBook = dynamic(() => import("./MenuBook"), {
 export default function MenuExperience({
   initialMenu,
   table,
+  slug,
 }: {
   initialMenu: Menu;
   table: string;
+  slug: string;
 }) {
   return (
-    <CartProvider table={table}>
-      <Inner initialMenu={initialMenu} table={table} />
+    <CartProvider table={`${slug}:${table}`}>
+      <Inner initialMenu={initialMenu} table={table} slug={slug} />
     </CartProvider>
   );
 }
 
-function Inner({ initialMenu, table }: { initialMenu: Menu; table: string }) {
+function Inner({
+  initialMenu,
+  table,
+  slug,
+}: {
+  initialMenu: Menu;
+  table: string;
+  slug: string;
+}) {
   const [menu, setMenu] = useState<Menu>(initialMenu);
   const [active, setActive] = useState(0);
   const [selected, setSelected] = useState<MenuItem | null>(null);
@@ -49,7 +59,9 @@ function Inner({ initialMenu, table }: { initialMenu: Menu; table: string }) {
   useEffect(() => {
     const t = setInterval(async () => {
       try {
-        const res = await fetch("/api/menu", { cache: "no-store" });
+        const res = await fetch(`/api/public/menu?slug=${encodeURIComponent(slug)}`, {
+          cache: "no-store",
+        });
         if (!res.ok) return;
         const fresh = await res.json();
         setMenu((prev) =>
@@ -58,7 +70,7 @@ function Inner({ initialMenu, table }: { initialMenu: Menu; table: string }) {
       } catch {}
     }, 12000);
     return () => clearInterval(t);
-  }, []);
+  }, [slug]);
 
   return (
     <div className="min-h-screen">
@@ -85,7 +97,7 @@ function Inner({ initialMenu, table }: { initialMenu: Menu; table: string }) {
             </svg>
             <span className="text-sm font-semibold">Sepet</span>
             {count > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-white">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-[#17130d]">
                 {count}
               </span>
             )}
@@ -101,7 +113,7 @@ function Inner({ initialMenu, table }: { initialMenu: Menu; table: string }) {
             onClick={() => bookRef.current?.flipToCategory(i)}
             className={`sans whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition ${
               i === active
-                ? "bg-paper font-semibold text-ink"
+                ? "bg-accent font-semibold text-[#17130d]"
                 : "bg-white/10 text-white/80 hover:bg-white/20"
             }`}
           >
@@ -149,6 +161,7 @@ function Inner({ initialMenu, table }: { initialMenu: Menu; table: string }) {
       />
       <Cart
         table={table}
+        slug={slug}
         currency={currency}
         open={cartOpen}
         onClose={() => setCartOpen(false)}

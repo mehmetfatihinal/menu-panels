@@ -1,11 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #f6efe3;
-  --paper-dark: #ece0cb;
-  --ink: #2b2118;
-  --accent: #b23a2f;
-  --accent-2: #c98a3a;
+  /* Crystal Restaurant — siyah & altın palet */
+  --paper: #17130d; /* onyx sayfa zemini */
+  --paper-dark: #241d13; /* biraz açık onyx (etiket/hover) */
+  --ink: #f1e7d2; /* krem metin */
+  --accent: #c8a34c; /* altın */
+  --accent-2: #e7cd8b; /* açık altın / şampanya */
 }
 
 @theme inline {
@@ -23,18 +24,18 @@ body {
 
 body {
   background:
-    radial-gradient(1200px 800px at 50% -10%, #3a2b20 0%, #1c130d 60%, #140d08 100%);
+    radial-gradient(1200px 800px at 50% -10%, #26221a 0%, #100f0c 55%, #080706 100%);
   color: var(--ink);
   font-family: ui-serif, Georgia, "Times New Roman", serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Kağıt dokusu hissi */
+/* Onyx sayfa dokusu — hafif altın parıltı */
 .paper {
   background-color: var(--paper);
   background-image:
-    linear-gradient(rgba(0, 0, 0, 0.015) 1px, transparent 1px),
-    radial-gradient(circle at 20% 30%, rgba(180, 140, 90, 0.08), transparent 40%);
+    linear-gradient(rgba(255, 255, 255, 0.014) 1px, transparent 1px),
+    radial-gradient(circle at 25% 25%, rgba(200, 163, 76, 0.07), transparent 45%);
   background-size: 100% 28px, 100% 100%;
 }
 
@@ -96,7 +97,7 @@ body {
   background: var(--paper);
 }
 .mp-cover {
-  background: #3a281c;
+  background: #0e0d0b;
 }
 /* Kitabın kendi gölgeleri ve köşe kıvrımı zaten kütüphaneden gelir */
 .stf__parent {

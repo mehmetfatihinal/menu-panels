@@ -4,29 +4,69 @@ import { QRCodeCanvas } from "qrcode.react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+type TableRow = { id: string; label: string };
 
 export default function TablesManager() {
   const [origin, setOrigin] = useState("");
-  const [count, setCount] = useState(8);
+  const [slug, setSlug] = useState("");
+  const [tables, setTables] = useState<TableRow[]>([]);
+  const [target, setTarget] = useState(1);
   const [copied, setCopied] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const load = async () => {
+    const res = await fetch("/api/tables", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = await res.json();
+    setSlug(data.slug);
+    const rows = data.tables as TableRow[];
+    setTables(rows);
+    setTarget(Math.max(1, rows.length)); // kutu her zaman gerçek sayıyı gösterir
+  };
 
   useEffect(() => {
     setOrigin(window.location.origin);
-    const saved = localStorage.getItem("mp-table-count");
-    if (saved) setCount(Math.max(1, Math.min(60, +saved || 8)));
+    load();
   }, []);
 
-  const updateCount = (n: number) => {
-    const v = Math.max(1, Math.min(60, n || 1));
-    setCount(v);
-    localStorage.setItem("mp-table-count", String(v));
+  const sorted = [...tables].sort(
+    (a, b) => (parseInt(a.label) || 0) - (parseInt(b.label) || 0)
+  );
+
+  // Masa sayısını tam olarak n yap: eksikleri (1..n) oluştur, fazlaları sil
+  const applyCount = async (n: number) => {
+    n = Math.max(0, Math.min(200, Math.floor(n || 0)));
+    setBusy(true);
+    if (n > 0) {
+      await fetch("/api/tables", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ count: n }),
+      });
+    }
+    const extras = tables.filter((t) => {
+      const num = parseInt(t.label);
+      return isNaN(num) || num > n;
+    });
+    await Promise.all(
+      extras.map((t) => fetch(`/api/tables?id=${t.id}`, { method: "DELETE" }))
+    );
+    await load();
+    setBusy(false);
   };
 
-  const tables = Array.from({ length: count }, (_, i) => String(i + 1));
+  const removeOne = async (id: string) => {
+    setBusy(true);
+    await fetch(`/api/tables?id=${id}`, { method: "DELETE" });
+    await load();
+    setBusy(false);
+  };
 
-  const copy = (t: string) => {
-    navigator.clipboard?.writeText(`${origin}/masa/${t}`);
-    setCopied(t);
+  const url = (label: string) => `${origin}/r/${slug}/masa/${label}`;
+
+  const copy = (label: string) => {
+    navigator.clipboard?.writeText(url(label));
+    setCopied(label);
     setTimeout(() => setCopied(null), 1500);
   };
 
@@ -36,61 +76,102 @@ export default function TablesManager() {
         <div>
           <h1 className="text-2xl font-bold">Masalar & QR Kodları</h1>
           <p className="text-sm text-gray-500">
-            Her masanın QR kodu farklıdır → siparişte masa numarası bellidir.
+            Toplam <b>{tables.length}</b> masa · her masanın QR'ı farklıdır.
           </p>
         </div>
-        <div className="flex items-center gap-2 print:hidden">
+        {slug && (
           <Link
-            href="/menu"
+            href={`/r/${slug}/menu`}
             target="_blank"
-            className="rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white hover:brightness-110"
+            className="rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-[#17130d] transition hover:brightness-110 print:hidden"
           >
             Ortak Menüyü Gör ↗
           </Link>
-          <label className="ml-2 text-sm text-gray-500">Masa sayısı</label>
+        )}
+      </div>
+
+      {/* Masa sayısı kontrolü */}
+      <div className="card mb-6 flex flex-wrap items-center gap-3 p-4 print:hidden">
+        <span className="text-sm font-medium text-gray-600">Masa sayısı</span>
+        <div className="flex items-center overflow-hidden rounded-lg border border-gray-300">
+          <button
+            onClick={() => applyCount(Math.max(0, tables.length - 1))}
+            disabled={busy || tables.length === 0}
+            className="px-3 py-2 text-lg text-gray-600 hover:bg-gray-100 disabled:opacity-40"
+          >
+            −
+          </button>
           <input
             type="number"
-            min={1}
-            max={60}
-            value={count}
-            onChange={(e) => updateCount(+e.target.value)}
-            className="input w-20"
+            min={0}
+            max={200}
+            value={target}
+            onChange={(e) => setTarget(Math.max(0, Math.min(200, +e.target.value || 0)))}
+            className="w-16 border-x border-gray-300 py-2 text-center outline-none"
           />
           <button
-            onClick={() => window.print()}
-            className="rounded-lg bg-[#1c1712] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
+            onClick={() => applyCount(tables.length + 1)}
+            disabled={busy}
+            className="px-3 py-2 text-lg text-gray-600 hover:bg-gray-100 disabled:opacity-40"
           >
-            Yazdır
+            +
           </button>
         </div>
+        <button
+          onClick={() => applyCount(target)}
+          disabled={busy}
+          className="rounded-lg bg-[#1c1712] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+        >
+          {busy ? "Uygulanıyor…" : "Uygula"}
+        </button>
+        <span className="text-xs text-gray-400">
+          Yazdığın sayıya göre masaları oluşturur/siler.
+        </span>
+        <button
+          onClick={() => window.print()}
+          className="ml-auto rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+        >
+          Yazdır
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {tables.map((t) => (
-          <div key={t} className="card flex flex-col items-center p-5">
-            <div className="rounded-xl bg-white p-2">
-              {origin && (
-                <QRCodeCanvas
-                  value={`${origin}/masa/${t}`}
-                  size={150}
-                  level="M"
-                  marginSize={2}
-                />
-              )}
+      {sorted.length === 0 ? (
+        <div className="card p-10 text-center text-gray-400">
+          Henüz masa yok. Yukarıdan sayı belirleyip “Uygula” deyin.
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {sorted.map((t) => (
+            <div key={t.id} className="card flex flex-col items-center p-5">
+              <div className="rounded-xl bg-white p-2">
+                {origin && slug && (
+                  <QRCodeCanvas value={url(t.label)} size={150} level="M" marginSize={2} />
+                )}
+              </div>
+              <div className="mt-3 text-lg font-bold">Masa {t.label}</div>
+              <div className="text-[11px] text-gray-400">
+                /r/{slug}/masa/{t.label}
+              </div>
+              <div className="mt-4 flex w-full gap-2 print:hidden">
+                <button
+                  onClick={() => copy(t.label)}
+                  className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
+                >
+                  {copied === t.label ? "✓ Kopyalandı" : "Bağlantıyı kopyala"}
+                </button>
+                <button
+                  onClick={() => removeOne(t.id)}
+                  disabled={busy}
+                  className="rounded-lg px-3 text-sm text-accent hover:bg-accent/10 disabled:opacity-40"
+                  title="Bu masayı sil"
+                >
+                  Sil
+                </button>
+              </div>
             </div>
-            <div className="mt-3 text-lg font-bold">Masa {t}</div>
-            <div className="text-[11px] text-gray-400">/masa/{t}</div>
-
-            <button
-              onClick={() => copy(t)}
-              className="mt-4 w-full rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50 print:hidden"
-              title="Bu masanın sipariş bağlantısını kopyala"
-            >
-              {copied === t ? "✓ Kopyalandı" : "Masa bağlantısını kopyala"}
-            </button>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

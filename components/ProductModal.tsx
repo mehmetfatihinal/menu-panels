@@ -46,7 +46,7 @@ export default function ProductModal({
               />
               {!item.available && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/55">
-                  <span className="sans rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-white">
+                  <span className="sans rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-[#17130d]">
                     Şu an mevcut değil
                   </span>
                 </div>
@@ -91,7 +91,7 @@ export default function ProductModal({
                   setAdded(true);
                   setTimeout(() => setAdded(false), 1200);
                 }}
-                className="sans mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 font-semibold text-white transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+                className="sans mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 font-semibold text-[#17130d] transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {item.available
                   ? added

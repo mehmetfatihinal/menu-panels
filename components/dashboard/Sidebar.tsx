@@ -11,17 +11,17 @@ const nav = [
   { href: "/dashboard/ayarlar", label: "Ayarlar", icon: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15H4.5a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 6 8" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ slug, name }: { slug: string; name: string }) {
   const path = usePathname();
 
   return (
     <aside className="flex h-full w-full flex-col bg-[#1c1712] text-white md:w-64">
       <div className="flex items-center gap-2 px-5 py-5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent font-bold">
-          M
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent font-bold text-[#17130d]">
+          {name.charAt(0).toUpperCase()}
         </div>
-        <div className="leading-tight">
-          <div className="font-semibold">Menu Panels</div>
+        <div className="min-w-0 leading-tight">
+          <div className="truncate font-semibold">{name}</div>
           <div className="text-[11px] text-white/50">Yönetim Paneli</div>
         </div>
       </div>
@@ -38,7 +38,7 @@ export default function Sidebar() {
               href={n.href}
               className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
                 active
-                  ? "bg-accent text-white"
+                  ? "bg-accent text-[#17130d]"
                   : "text-white/70 hover:bg-white/10 hover:text-white"
               }`}
             >
@@ -53,7 +53,7 @@ export default function Sidebar() {
 
       <div className="space-y-2 border-t border-white/10 p-3">
         <Link
-          href="/menu"
+          href={`/r/${slug}/menu`}
           target="_blank"
           className="flex items-center justify-center gap-2 rounded-lg bg-white/10 px-3 py-2.5 text-sm font-medium transition hover:bg-white/20"
         >
@@ -62,12 +62,11 @@ export default function Sidebar() {
           </svg>
           Menüyü Görüntüle
         </Link>
-        <Link
-          href="/"
-          className="block px-3 text-center text-[11px] text-white/40 hover:text-white/70"
-        >
-          ← Siteye dön
-        </Link>
+        <form action="/auth/signout" method="post">
+          <button className="w-full rounded-lg px-3 py-2 text-center text-xs text-white/40 transition hover:text-white/80">
+            Çıkış yap
+          </button>
+        </form>
       </div>
     </aside>
   );

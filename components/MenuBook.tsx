@@ -45,6 +45,7 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
   const flipping = useRef(false);
   const categories = menu.categories;
   const currency = menu.restaurant.currency;
+  const logoUrl = menu.restaurant.logoUrl;
 
   const pf = () => bookRef.current?.pageFlip?.();
 
@@ -101,19 +102,32 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
       onFlip={handleFlip}
       onChangeState={handleState}
     >
-      {/* ÖN KAPAK */}
+      {/* ÖN KAPAK — logo + altın çerçeve */}
       <Page hard className="mp-cover">
-        <div className="flex h-full flex-col items-center justify-center bg-[#3a281c] p-8 text-center text-[#f4e6cf]">
-          <div className="mb-4 h-px w-16 bg-[#c98a3a]" />
-          <p className="sans text-xs uppercase tracking-[0.35em] text-[#c98a3a]">
-            {menu.restaurant.tagline}
-          </p>
-          <h1 className="serif mt-3 text-4xl font-bold">
-            {menu.restaurant.name}
-          </h1>
-          <p className="serif mt-6 text-lg italic text-[#f4e6cf]/70">Menü</p>
-          <div className="mt-4 h-px w-16 bg-[#c98a3a]" />
-          <p className="sans absolute bottom-8 text-[11px] text-[#f4e6cf]/50">
+        <div className="relative flex h-full flex-col items-center justify-center bg-[#0e0d0b] p-8 text-center">
+          <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/45" />
+          <div className="pointer-events-none absolute inset-[14px] border border-[#c8a34c]/20" />
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt={menu.restaurant.name}
+              className="max-h-[65%] w-[78%] max-w-[300px] object-contain drop-shadow-[0_0_30px_rgba(200,163,76,0.18)]"
+            />
+          ) : (
+            <div className="px-6 text-center">
+              <div className="mb-4 text-3xl text-[#c8a34c]">◆</div>
+              <h1 className="serif text-4xl font-bold leading-tight text-[#e7cd8b]">
+                {menu.restaurant.name}
+              </h1>
+              {menu.restaurant.tagline && (
+                <p className="sans mt-4 text-[11px] uppercase tracking-[0.35em] text-[#c8a34c]">
+                  {menu.restaurant.tagline}
+                </p>
+              )}
+              <div className="mx-auto mt-4 h-px w-16 bg-[#c8a34c]/60" />
+            </div>
+          )}
+          <p className="sans absolute bottom-8 text-[11px] tracking-[0.3em] text-[#e7cd8b]/60">
             açmak için köşeye dokun →
           </p>
         </div>
@@ -135,11 +149,15 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
 
       {/* ARKA KAPAK */}
       <Page hard className="mp-cover">
-        <div className="flex h-full flex-col items-center justify-center bg-[#3a281c] p-8 text-center text-[#f4e6cf]">
-          <p className="serif text-2xl italic">Afiyet olsun</p>
-          <div className="mt-4 h-px w-16 bg-[#c98a3a]" />
-          <p className="sans mt-4 text-xs tracking-widest text-[#f4e6cf]/60">
-            {menu.restaurant.name}
+        <div className="relative flex h-full flex-col items-center justify-center bg-[#0e0d0b] p-8 text-center">
+          <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/30" />
+          {logoUrl ? (
+            <img src={logoUrl} alt="" className="max-h-40 w-32 object-contain opacity-90" />
+          ) : (
+            <div className="text-2xl text-[#c8a34c]">◆</div>
+          )}
+          <p className="serif mt-6 text-2xl italic text-[#e7cd8b]">
+            Afiyet olsun
           </p>
         </div>
       </Page>
@@ -201,7 +219,7 @@ function MenuPage({
           <li
             key={item.id}
             onClick={() => onOpen(item)}
-            className={`group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition hover:bg-black/5 ${
+            className={`group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition hover:bg-white/5 ${
               !item.available ? "opacity-55" : ""
             }`}
           >
@@ -238,7 +256,7 @@ function MenuPage({
                 add(item);
               }}
               disabled={!item.available}
-              className="sans flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-white transition enabled:hover:brightness-110 disabled:bg-ink/20"
+              className="sans flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-[#17130d] transition enabled:hover:brightness-110 disabled:bg-white/10 disabled:text-white/30"
               aria-label="Sepete ekle"
             >
               +

@@ -11,7 +11,7 @@ const nav = [
   { href: "/dashboard/ayarlar", label: "Ayarlar" },
 ];
 
-export default function MobileNav() {
+export default function MobileNav({ slug }: { slug: string }) {
   const path = usePathname();
   return (
     <div className="sticky top-0 z-20 border-b border-gray-200 bg-[#1c1712] md:hidden">
@@ -23,7 +23,7 @@ export default function MobileNav() {
           <span className="font-semibold">Menu Panels</span>
         </div>
         <Link
-          href="/menu"
+          href={`/r/${slug}/menu`}
           target="_blank"
           className="rounded-lg bg-white/10 px-3 py-1.5 text-xs font-medium text-white"
         >

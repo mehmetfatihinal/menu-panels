@@ -6,11 +6,13 @@ import { useCart } from "@/lib/cart";
 
 export default function Cart({
   table,
+  slug,
   currency,
   open,
   onClose,
 }: {
   table: string;
+  slug: string;
   currency: string;
   open: boolean;
   onClose: () => void;
@@ -24,10 +26,11 @@ export default function Cart({
     setSending(true);
     setError(null);
     try {
-      const res = await fetch("/api/orders", {
+      const res = await fetch("/api/public/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          slug,
           table,
           lines: lines.map((l) => ({ id: l.item.id, qty: l.qty })),
         }),
@@ -111,7 +114,7 @@ export default function Cart({
                   {lines.map((l) => (
                     <li
                       key={l.item.id}
-                      className="flex gap-3 rounded-xl bg-white/40 p-3"
+                      className="flex gap-3 rounded-xl bg-white/5 p-3"
                     >
                       <img
                         src={l.item.image}
@@ -178,7 +181,7 @@ export default function Cart({
                 <button
                   onClick={submit}
                   disabled={sending}
-                  className="sans w-full rounded-xl bg-accent py-3.5 font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+                  className="sans w-full rounded-xl bg-accent py-3.5 font-semibold text-[#17130d] transition hover:brightness-110 disabled:opacity-50"
                 >
                   {sending ? "Gönderiliyor…" : "Siparişi Onayla"}
                 </button>

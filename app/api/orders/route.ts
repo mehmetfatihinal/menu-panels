@@ -1,81 +1,41 @@
 import { NextResponse } from "next/server";
-import { readMenu, readOrders, writeOrders } from "@/lib/data";
+import { createClient } from "@/lib/supabase/server";
+import { getCurrentBusiness } from "@/lib/business";
 import type { Order } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-// Siparişleri listele (admin paneli için)
+// Panel: işletmenin siparişleri (RLS ile yalnızca sahibi görür)
 export async function GET() {
-  const orders = await readOrders();
+  const business = await getCurrentBusiness();
+  if (!business) return NextResponse.json({ orders: [] });
+
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("business_id", business.id)
+    .order("created_at", { ascending: false });
+
+  const orders: Order[] = (data ?? []).map((o) => ({
+    id: o.id,
+    table: o.table_label,
+    createdAt: o.created_at,
+    status: o.status,
+    lines: o.lines ?? [],
+    total: Number(o.total),
+  }));
   return NextResponse.json({ orders });
 }
 
-// Yeni sipariş oluştur (müşteri menüsünden)
-export async function POST(req: Request) {
-  const body = await req.json();
-  const { table, lines } = body as {
-    table: string;
-    lines: { id: string; qty: number; note?: string }[];
-  };
-
-  if (!table || !Array.isArray(lines) || lines.length === 0) {
-    return NextResponse.json({ error: "Sepet boş" }, { status: 400 });
-  }
-
-  // Fiyat ve stok durumunu sunucu tarafında doğrula (güvenlik)
-  const menu = await readMenu();
-  const allItems = menu.categories.flatMap((c) => c.items);
-
-  const validated: Order["lines"] = [];
-  for (const line of lines) {
-    const item = allItems.find((i) => i.id === line.id);
-    if (!item) continue;
-    if (!item.available) {
-      return NextResponse.json(
-        { error: `"${item.name}" şu anda mevcut değil.` },
-        { status: 409 }
-      );
-    }
-    validated.push({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      qty: Math.max(1, Math.min(99, Math.floor(line.qty))),
-      note: line.note,
-    });
-  }
-
-  if (validated.length === 0) {
-    return NextResponse.json({ error: "Geçerli ürün yok" }, { status: 400 });
-  }
-
-  const total = validated.reduce((s, l) => s + l.price * l.qty, 0);
-
-  const order: Order = {
-    id: "SIP-" + Math.random().toString(36).slice(2, 8).toUpperCase(),
-    table: String(table),
-    createdAt: new Date().toISOString(),
-    status: "yeni",
-    lines: validated,
-    total,
-  };
-
-  const orders = await readOrders();
-  orders.unshift(order);
-  await writeOrders(orders);
-
-  return NextResponse.json({ ok: true, order });
-}
-
-// Sipariş durumunu güncelle (admin)
+// Panel: sipariş durumu güncelle
 export async function PATCH(req: Request) {
   const { id, status } = await req.json();
-  const orders = await readOrders();
-  const order = orders.find((o) => o.id === id);
-  if (!order) {
-    return NextResponse.json({ error: "Sipariş bulunamadı" }, { status: 404 });
-  }
-  order.status = status;
-  await writeOrders(orders);
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("orders")
+    .update({ status })
+    .eq("id", id);
+  if (error) return NextResponse.json({ error: error.message }, { status: 400 });
   return NextResponse.json({ ok: true });
 }
