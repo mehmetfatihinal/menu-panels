@@ -12,12 +12,6 @@ const nextConfig = {
   //   böylece dev/build dosya yazarken bozulma olmaz.
   // - Deploy/CI ortamlarında (Vercel, Netlify, CI) standart ".next".
   distDir: isDeploy ? ".next" : ".next.nosync",
-  // Sayfalar/route'lar çalışma anında data/*.json dosyalarını fs ile okuyor.
-  // Vercel serverless paketine bu dosyaların dahil edilmesini garantiler
-  // (aksi halde menü sayfası dosyayı bulamayıp hata verebilir).
-  outputFileTracingIncludes: {
-    "/**": ["./data/**"],
-  },
   // Bu projeyi Turbopack'in workspace kökü olarak sabitle
   // (Desktop'taki diğer lockfile'lar yüzünden yanlış kök seçilmesini önler)
   turbopack: {

@@ -1,10 +1,14 @@
-# Netlify: Next.js (App Router, SSR) yayını
-# @netlify/plugin-nextjs, dinamik/sunucu-render sayfaları çalıştırır.
-# Bu olmadan Netlify siteyi statik sanıp tüm rotalarda "page not found" verir.
+# Netlify — Next.js 16 (App Router, SSR) + Supabase
+# @netlify/plugin-nextjs sunucu-render sayfaları/middleware/route handler'ları çalıştırır.
+# Bu plugin olmadan Netlify siteyi statik sanıp tüm rotalarda "page not found" verir.
 
 [build]
-  command = "next build"
+  command = "npm run build"
   publish = ".next"
+
+[build.environment]
+  # Next.js 16 için Node 20 (Netlify destekli LTS)
+  NODE_VERSION = "20"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
