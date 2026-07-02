@@ -16,18 +16,23 @@ export default function LoginPage() {
     e.preventDefault();
     setBusy(true);
     setErr(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: pw,
-    });
-    setBusy(false);
-    if (error) {
-      setErr("E-posta veya şifre hatalı.");
-      return;
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: pw,
+      });
+      if (error) {
+        setErr("E-posta veya şifre hatalı.");
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+    } catch (e: any) {
+      setErr(e?.message || "Bağlantı hatası. Lütfen tekrar deneyin.");
+    } finally {
+      setBusy(false);
     }
-    router.push("/dashboard");
-    router.refresh();
   };
 
   return (

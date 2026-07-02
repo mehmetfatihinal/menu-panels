@@ -18,33 +18,36 @@ export default function SignupPage() {
     e.preventDefault();
     setBusy(true);
     setErr(null);
+    try {
+      // 1) İşletme + kullanıcı oluştur (sunucu, service-role)
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ businessName, email, password: pw }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setErr(data.error || "Kayıt başarısız.");
+        return;
+      }
 
-    // 1) İşletme + kullanıcı oluştur (sunucu, service-role)
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ businessName, email, password: pw }),
-    });
-    const data = await res.json();
-    if (!res.ok) {
+      // 2) Otomatik giriş
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password: pw,
+      });
+      if (error) {
+        setErr("Hesap oluşturuldu ancak giriş yapılamadı. Giriş sayfasından deneyin.");
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+    } catch (e: any) {
+      setErr(e?.message || "Bağlantı hatası. Lütfen tekrar deneyin.");
+    } finally {
       setBusy(false);
-      setErr(data.error || "Kayıt başarısız.");
-      return;
     }
-
-    // 2) Otomatik giriş
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password: pw,
-    });
-    setBusy(false);
-    if (error) {
-      router.push("/login");
-      return;
-    }
-    router.push("/dashboard");
-    router.refresh();
   };
 
   return (
