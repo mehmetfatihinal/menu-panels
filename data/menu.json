@@ -1,0 +1,167 @@
+{
+  "restaurant": {
+    "name": "Menu Panels",
+    "tagline": "Lezzetin dijital hali",
+    "currency": "₺"
+  },
+  "categories": [
+    {
+      "id": "baslangiclar",
+      "name": "Başlangıçlar",
+      "cover": {
+        "type": "image",
+        "src": "https://images.unsplash.com/photo-1541014741259-de529411b96a?w=1200&q=80",
+        "video": "https://cdn.coverr.co/videos/coverr-preparing-a-salad-2633/1080p.mp4"
+      },
+      "items": [
+        {
+          "id": "mercimek-corba",
+          "name": "Mercimek Çorbası",
+          "description": "Geleneksel kırmızı mercimek, tereyağı ve nane ile.",
+          "price": 85,
+          "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=800&q=80",
+          "available": true,
+          "tags": [
+            "sıcak",
+            "vejetaryen"
+          ]
+        },
+        {
+          "id": "humus",
+          "name": "Humus Tabağı",
+          "description": "Nohut ezmesi, tahin, zeytinyağı ve közlenmiş biber.",
+          "price": 110,
+          "image": "https://images.unsplash.com/photo-1637949385162-b0b12e0a9f70?w=800&q=80",
+          "available": true,
+          "tags": [
+            "soğuk",
+            "vegan"
+          ]
+        },
+        {
+          "id": "sigara-boregi",
+          "name": "Sigara Böreği",
+          "description": "El açması yufkada peynir, çıtır çıtır kızartılmış (6 adet).",
+          "price": 95,
+          "image": "https://images.unsplash.com/photo-1625944525533-473f1a3d54e7?w=800&q=80",
+          "available": false,
+          "tags": [
+            "sıcak"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ana-yemekler",
+      "name": "Ana Yemekler",
+      "cover": {
+        "type": "image",
+        "src": "https://images.unsplash.com/photo-1544025162-d76694265947?w=1200&q=80",
+        "video": "https://cdn.coverr.co/videos/coverr-grilling-meat-on-the-bbq-5244/1080p.mp4"
+      },
+      "items": [
+        {
+          "id": "adana-kebap",
+          "name": "Adana Kebap",
+          "description": "Zırh ile çekilmiş dana kıyma, közde pişmiş, lavaş ve közlenmiş sebze ile.",
+          "price": 320,
+          "image": "https://images.unsplash.com/photo-1633321702518-7feccafb94d5?w=800&q=80",
+          "available": true,
+          "tags": [
+            "ızgara",
+            "acılı"
+          ]
+        },
+        {
+          "id": "izgara-kofte",
+          "name": "Izgara Köfte",
+          "description": "Ev yapımı baharatlı köfte, pilav ve piyaz ile servis edilir.",
+          "price": 260,
+          "image": "https://images.unsplash.com/photo-1529042410759-befb1204b468?w=800&q=80",
+          "available": true,
+          "tags": [
+            "ızgara"
+          ]
+        },
+        {
+          "id": "tavuk-sote",
+          "name": "Tavuk Sote",
+          "description": "Sebzeli tavuk sote, tereyağlı pilav eşliğinde.",
+          "price": 240,
+          "image": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800&q=80",
+          "available": true,
+          "tags": [
+            "sıcak"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tatlilar",
+      "name": "Tatlılar",
+      "cover": {
+        "type": "image",
+        "src": "https://images.unsplash.com/photo-1551024601-bec78aea704b?w=1200&q=80",
+        "video": ""
+      },
+      "items": [
+        {
+          "id": "baklava",
+          "name": "Fıstıklı Baklava",
+          "description": "40 kat el açması yufka, Antep fıstığı, tereyağı (4 dilim).",
+          "price": 180,
+          "image": "https://images.unsplash.com/photo-1519676867240-f03562e64548?w=800&q=80",
+          "available": true,
+          "tags": [
+            "tatlı"
+          ]
+        },
+        {
+          "id": "sutlac",
+          "name": "Fırın Sütlaç",
+          "description": "Geleneksel fırınlanmış sütlaç, tarçın ile.",
+          "price": 120,
+          "image": "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800&q=80",
+          "available": true,
+          "tags": [
+            "tatlı",
+            "soğuk"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icecekler",
+      "name": "İçecekler",
+      "cover": {
+        "type": "image",
+        "src": "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=1200&q=80",
+        "video": ""
+      },
+      "items": [
+        {
+          "id": "ayran",
+          "name": "Ayran",
+          "description": "Ev yapımı köpüklü ayran.",
+          "price": 45,
+          "image": "https://images.unsplash.com/photo-1626200419199-391ae4be7a41?w=800&q=80",
+          "available": true,
+          "tags": [
+            "soğuk"
+          ]
+        },
+        {
+          "id": "turk-kahvesi",
+          "name": "Türk Kahvesi",
+          "description": "Közde pişmiş, lokum eşliğinde.",
+          "price": 70,
+          "image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&q=80",
+          "available": true,
+          "tags": [
+            "sıcak"
+          ]
+        }
+      ]
+    }
+  ]
+}
