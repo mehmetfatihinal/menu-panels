@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Category, Menu, MenuItem } from "@/lib/types";
 import UploadButton from "./UploadButton";
+import BulkImport from "./BulkImport";
 
 type ProductDraft = {
   categoryId: string;
@@ -25,6 +26,7 @@ export default function MenuManager() {
   const [menu, setMenu] = useState<Menu | null>(null);
   const [product, setProduct] = useState<ProductDraft | null>(null);
   const [category, setCategory] = useState<CategoryDraft | null>(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
   const [busy, setBusy] = useState(false);
 
   const load = async () => {
@@ -108,15 +110,27 @@ export default function MenuManager() {
           <h1 className="text-2xl font-bold">Menü Yönetimi</h1>
           <p className="text-sm text-gray-500">Kategori ve ürünleri düzenle</p>
         </div>
-        <button
-          onClick={() =>
-            setCategory({ name: "", coverSrc: "", coverVideo: "" })
-          }
-          className="rounded-lg bg-[#1c1712] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
-        >
-          + Kategori Ekle
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setBulkOpen(true)}
+            className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Toplu Ekle
+          </button>
+          <button
+            onClick={() =>
+              setCategory({ name: "", coverSrc: "", coverVideo: "" })
+            }
+            className="rounded-lg bg-[#1c1712] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
+          >
+            + Kategori Ekle
+          </button>
+        </div>
       </div>
+
+      {bulkOpen && (
+        <BulkImport onClose={() => setBulkOpen(false)} onDone={load} />
+      )}
 
       <div className="space-y-6">
         {menu.categories.map((cat) => (
