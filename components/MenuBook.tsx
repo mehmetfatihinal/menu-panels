@@ -217,8 +217,8 @@ function MenuPage({
   const { add } = useCart();
   return (
     <div className="paper flex h-full flex-col p-5 md:p-6">
-      <h2 className="serif mb-1 text-2xl font-bold text-ink">{cat.name}</h2>
-      <div className="mb-3 h-px w-full bg-ink/15" />
+      <h2 className="serif mb-1 text-2xl font-bold text-[#e7cd8b]">{cat.name}</h2>
+      <div className="mb-3 h-px w-full bg-gradient-to-r from-[#c8a34c]/70 via-[#c8a34c]/25 to-transparent" />
       <ul className="thin-scroll flex-1 space-y-1 overflow-y-auto">
         {cat.items.map((item) => (
           <li
