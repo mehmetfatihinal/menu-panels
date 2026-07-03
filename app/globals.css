@@ -24,7 +24,9 @@ body {
 
 body {
   background:
-    radial-gradient(1200px 800px at 50% -10%, #26221a 0%, #100f0c 55%, #080706 100%);
+    linear-gradient(rgba(8, 7, 6, 0.6), rgba(8, 7, 6, 0.78)),
+    url("/marble-bg.jpg") center / cover fixed no-repeat,
+    #0a0908;
   color: var(--ink);
   font-family: ui-serif, Georgia, "Times New Roman", serif;
   -webkit-font-smoothing: antialiased;

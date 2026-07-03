@@ -102,19 +102,20 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
       onFlip={handleFlip}
       onChangeState={handleState}
     >
-      {/* ÖN KAPAK — logo + altın çerçeve */}
+      {/* ÖN KAPAK — kapak görseli/logo mermer üzerinde */}
       <Page hard className="mp-cover">
-        <div className="relative flex h-full flex-col items-center justify-center bg-[#0e0d0b] p-8 text-center">
-          <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/45" />
-          <div className="pointer-events-none absolute inset-[14px] border border-[#c8a34c]/20" />
+        <div
+          className="relative h-full w-full bg-cover bg-center"
+          style={{ backgroundImage: "url('/marble-bg.jpg')" }}
+        >
           {logoUrl ? (
             <img
               src={logoUrl}
               alt={menu.restaurant.name}
-              className="max-h-[65%] w-[78%] max-w-[300px] object-contain drop-shadow-[0_0_30px_rgba(200,163,76,0.18)]"
+              className="absolute inset-0 h-full w-full object-contain"
             />
           ) : (
-            <div className="px-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/45 px-6 text-center">
               <div className="mb-4 text-3xl text-[#c8a34c]">◆</div>
               <h1 className="serif text-4xl font-bold leading-tight text-[#e7cd8b]">
                 {menu.restaurant.name}
@@ -127,7 +128,8 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
               <div className="mx-auto mt-4 h-px w-16 bg-[#c8a34c]/60" />
             </div>
           )}
-          <p className="sans absolute bottom-8 text-[11px] tracking-[0.3em] text-[#e7cd8b]/60">
+          <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/40" />
+          <p className="sans absolute inset-x-0 bottom-7 text-center text-[11px] tracking-[0.3em] text-[#e7cd8b]/70 drop-shadow">
             açmak için köşeye dokun →
           </p>
         </div>
@@ -147,17 +149,20 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
         </Page>,
       ])}
 
-      {/* ARKA KAPAK */}
+      {/* ARKA KAPAK — mermer */}
       <Page hard className="mp-cover">
-        <div className="relative flex h-full flex-col items-center justify-center bg-[#0e0d0b] p-8 text-center">
+        <div
+          className="relative flex h-full flex-col items-center justify-center bg-cover bg-center p-8 text-center"
+          style={{ backgroundImage: "url('/marble-bg.jpg')" }}
+        >
+          <div className="absolute inset-0 bg-black/45" />
           <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/30" />
-          {logoUrl ? (
-            <img src={logoUrl} alt="" className="max-h-40 w-32 object-contain opacity-90" />
-          ) : (
-            <div className="text-2xl text-[#c8a34c]">◆</div>
-          )}
-          <p className="serif mt-6 text-2xl italic text-[#e7cd8b]">
+          <div className="relative z-10 text-2xl text-[#c8a34c]">◆</div>
+          <p className="serif relative z-10 mt-5 text-2xl italic text-[#e7cd8b]">
             Afiyet olsun
+          </p>
+          <p className="sans relative z-10 mt-3 text-[11px] uppercase tracking-[0.3em] text-[#c8a34c]/80">
+            {menu.restaurant.name}
           </p>
         </div>
       </Page>
