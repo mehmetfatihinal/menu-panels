@@ -3,10 +3,12 @@
 import { QRCodeCanvas } from "qrcode.react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useLang } from "@/lib/i18n";
 
 type TableRow = { id: string; label: string };
 
 export default function TablesManager() {
+  const { t } = useLang();
   const [origin, setOrigin] = useState("");
   const [slug, setSlug] = useState("");
   const [tables, setTables] = useState<TableRow[]>([]);
@@ -74,9 +76,9 @@ export default function TablesManager() {
     <div className="p-4 md:p-8">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">Masalar & QR Kodları</h1>
+          <h1 className="text-2xl font-bold">{t("tablesTitle")}</h1>
           <p className="text-sm text-gray-500">
-            Toplam <b>{tables.length}</b> masa · her masanın QR'ı farklıdır.
+            {t("total")} <b>{tables.length}</b> {t("tablesWord")} · {t("tablesEach")}
           </p>
         </div>
         {slug && (
@@ -85,14 +87,14 @@ export default function TablesManager() {
             target="_blank"
             className="rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-[#17130d] transition hover:brightness-110 print:hidden"
           >
-            Ortak Menüyü Gör ↗
+            {t("viewSharedMenu")}
           </Link>
         )}
       </div>
 
       {/* Masa sayısı kontrolü */}
       <div className="card mb-6 flex flex-wrap items-center gap-3 p-4 print:hidden">
-        <span className="text-sm font-medium text-gray-600">Masa sayısı</span>
+        <span className="text-sm font-medium text-gray-600">{t("tableCountLabel")}</span>
         <div className="flex items-center overflow-hidden rounded-lg border border-gray-300">
           <button
             onClick={() => applyCount(Math.max(0, tables.length - 1))}
@@ -122,50 +124,46 @@ export default function TablesManager() {
           disabled={busy}
           className="rounded-lg bg-[#1c1712] px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
         >
-          {busy ? "Uygulanıyor…" : "Uygula"}
+          {busy ? t("applying") : t("apply")}
         </button>
-        <span className="text-xs text-gray-400">
-          Yazdığın sayıya göre masaları oluşturur/siler.
-        </span>
+        <span className="text-xs text-gray-400">{t("applyHint")}</span>
         <button
           onClick={() => window.print()}
           className="ml-auto rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
         >
-          Yazdır
+          {t("print")}
         </button>
       </div>
 
       {sorted.length === 0 ? (
-        <div className="card p-10 text-center text-gray-400">
-          Henüz masa yok. Yukarıdan sayı belirleyip “Uygula” deyin.
-        </div>
+        <div className="card p-10 text-center text-gray-400">{t("noTables")}</div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {sorted.map((t) => (
-            <div key={t.id} className="card flex flex-col items-center p-5">
+          {sorted.map((tbl) => (
+            <div key={tbl.id} className="card flex flex-col items-center p-5">
               <div className="rounded-xl bg-white p-2">
                 {origin && slug && (
-                  <QRCodeCanvas value={url(t.label)} size={150} level="M" marginSize={2} />
+                  <QRCodeCanvas value={url(tbl.label)} size={150} level="M" marginSize={2} />
                 )}
               </div>
-              <div className="mt-3 text-lg font-bold">Masa {t.label}</div>
+              <div className="mt-3 text-lg font-bold">{t("thTable")} {tbl.label}</div>
               <div className="text-[11px] text-gray-400">
-                /r/{slug}/masa/{t.label}
+                /r/{slug}/masa/{tbl.label}
               </div>
               <div className="mt-4 flex w-full gap-2 print:hidden">
                 <button
-                  onClick={() => copy(t.label)}
+                  onClick={() => copy(tbl.label)}
                   className="flex-1 rounded-lg border border-gray-200 py-2 text-sm text-gray-600 hover:bg-gray-50"
                 >
-                  {copied === t.label ? "✓ Kopyalandı" : "Bağlantıyı kopyala"}
+                  {copied === tbl.label ? t("copied") : t("copyLink")}
                 </button>
                 <button
-                  onClick={() => removeOne(t.id)}
+                  onClick={() => removeOne(tbl.id)}
                   disabled={busy}
                   className="rounded-lg px-3 text-sm text-accent hover:bg-accent/10 disabled:opacity-40"
-                  title="Bu masayı sil"
+                  title={t("deleteTableTitle")}
                 >
-                  Sil
+                  {t("del")}
                 </button>
               </div>
             </div>

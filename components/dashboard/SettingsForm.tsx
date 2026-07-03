@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import type { Menu } from "@/lib/types";
 import UploadButton from "./UploadButton";
+import { createClient } from "@/lib/supabase/client";
+import { useLang } from "@/lib/i18n";
 
 export default function SettingsForm() {
+  const { t } = useLang();
   const [form, setForm] = useState({
     name: "",
     tagline: "",
@@ -13,6 +16,11 @@ export default function SettingsForm() {
   });
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  // Hesap (e-posta / şifre)
+  const [acc, setAcc] = useState({ email: "", password: "", password2: "" });
+  const [accMsg, setAccMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [accBusy, setAccBusy] = useState(false);
 
   useEffect(() => {
     fetch("/api/menu", { cache: "no-store" })
@@ -25,7 +33,41 @@ export default function SettingsForm() {
           logo_url: m.restaurant.logoUrl ?? "",
         })
       );
+    // mevcut e-postayı doldur
+    createClient()
+      .auth.getUser()
+      .then(({ data }) =>
+        setAcc((a) => ({ ...a, email: data.user?.email ?? "" }))
+      )
+      .catch(() => {});
   }, []);
+
+  const saveAccount = async () => {
+    setAccMsg(null);
+    if (acc.password && acc.password !== acc.password2) {
+      setAccMsg({ ok: false, text: t("pwMismatch") });
+      return;
+    }
+    setAccBusy(true);
+    const res = await fetch("/api/account", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: acc.email, password: acc.password || undefined }),
+    });
+    const data = await res.json();
+    setAccBusy(false);
+    if (!res.ok) {
+      setAccMsg({ ok: false, text: data.error || "—" });
+      return;
+    }
+    setAccMsg({
+      ok: true,
+      text: data.changed ? t("accUpdated") : t("accNoChange"),
+    });
+    setAcc((a) => ({ ...a, password: "", password2: "" }));
+    // şifre/e-posta değiştiyse oturumu tazele
+    if (data.changed) createClient().auth.refreshSession().catch(() => {});
+  };
 
   const save = async () => {
     setBusy(true);
@@ -42,14 +84,14 @@ export default function SettingsForm() {
   return (
     <div className="p-4 md:p-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Ayarlar</h1>
-        <p className="text-sm text-gray-500">İşletme bilgileri ve logo</p>
+        <h1 className="text-2xl font-bold">{t("navSettings")}</h1>
+        <p className="text-sm text-gray-500">{t("settingsSub")}</p>
       </div>
 
       <div className="card max-w-lg space-y-4 p-6">
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-gray-500">
-            İşletme adı
+            {t("bizName")}
           </span>
           <input
             value={form.name}
@@ -59,7 +101,7 @@ export default function SettingsForm() {
         </label>
 
         <label className="block">
-          <span className="mb-1 block text-xs font-medium text-gray-500">Slogan</span>
+          <span className="mb-1 block text-xs font-medium text-gray-500">{t("tagline")}</span>
           <input
             value={form.tagline}
             onChange={(e) => setForm({ ...form, tagline: e.target.value })}
@@ -70,7 +112,7 @@ export default function SettingsForm() {
 
         <label className="block">
           <span className="mb-1 block text-xs font-medium text-gray-500">
-            Para birimi
+            {t("currency")}
           </span>
           <input
             value={form.currency}
@@ -82,7 +124,7 @@ export default function SettingsForm() {
 
         <div>
           <span className="mb-1 block text-xs font-medium text-gray-500">
-            Logo (menü kapağında görünür)
+            {t("logoLabel")}
           </span>
           <div className="flex items-center gap-4">
             <div className="flex h-24 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-[#0e0d0b]">
@@ -93,13 +135,13 @@ export default function SettingsForm() {
                   className="max-h-full max-w-full object-contain"
                 />
               ) : (
-                <span className="text-xs text-gray-400">Logo yok</span>
+                <span className="text-xs text-gray-400">{t("noLogo")}</span>
               )}
             </div>
             <div className="flex-1">
               <UploadButton
                 accept="image/*"
-                label="Bilgisayardan logo yükle"
+                label={t("uploadLogo")}
                 onUploaded={(url) => setForm({ ...form, logo_url: url })}
               />
               {form.logo_url && (
@@ -107,12 +149,10 @@ export default function SettingsForm() {
                   onClick={() => setForm({ ...form, logo_url: "" })}
                   className="mt-1.5 text-xs text-accent hover:underline"
                 >
-                  Logoyu kaldır
+                  {t("removeLogo")}
                 </button>
               )}
-              <p className="mt-1 text-[11px] text-gray-400">
-                Şeffaf arka planlı PNG önerilir.
-              </p>
+              <p className="mt-1 text-[11px] text-gray-400">{t("logoHint")}</p>
             </div>
           </div>
         </div>
@@ -123,9 +163,70 @@ export default function SettingsForm() {
             disabled={busy}
             className="rounded-lg bg-accent px-5 py-2.5 font-medium text-[#17130d] hover:brightness-110 disabled:opacity-50"
           >
-            {busy ? "Kaydediliyor…" : "Kaydet"}
+            {busy ? t("saving") : t("save")}
           </button>
-          {saved && <span className="text-sm text-emerald-600">✓ Kaydedildi</span>}
+          {saved && <span className="text-sm text-emerald-600">{t("savedOk")}</span>}
+        </div>
+      </div>
+
+      {/* Hesap: e-posta / şifre */}
+      <div className="card mt-6 max-w-lg space-y-4 p-6">
+        <div>
+          <h2 className="text-lg font-bold">{t("account")}</h2>
+          <p className="text-sm text-gray-500">{t("accountSub")}</p>
+        </div>
+
+        <label className="block">
+          <span className="mb-1 block text-xs font-medium text-gray-500">{t("email")}</span>
+          <input
+            type="email"
+            value={acc.email}
+            onChange={(e) => setAcc({ ...acc, email: e.target.value })}
+            className="input"
+          />
+        </label>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-gray-500">
+              {t("newPassword")}
+            </span>
+            <input
+              type="password"
+              value={acc.password}
+              onChange={(e) => setAcc({ ...acc, password: e.target.value })}
+              placeholder={t("passwordPlaceholder")}
+              className="input"
+            />
+          </label>
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-gray-500">
+              {t("newPasswordRepeat")}
+            </span>
+            <input
+              type="password"
+              value={acc.password2}
+              onChange={(e) => setAcc({ ...acc, password2: e.target.value })}
+              className="input"
+            />
+          </label>
+        </div>
+
+        <div className="flex items-center gap-3 pt-1">
+          <button
+            onClick={saveAccount}
+            disabled={accBusy}
+            className="rounded-lg bg-[#1c1712] px-5 py-2.5 font-medium text-white hover:opacity-90 disabled:opacity-50"
+          >
+            {accBusy ? t("updating") : t("updateAccount")}
+          </button>
+          {accMsg && (
+            <span
+              className={`text-sm ${accMsg.ok ? "text-emerald-600" : "text-accent"}`}
+            >
+              {accMsg.text}
+            </span>
+          )}
         </div>
       </div>
     </div>

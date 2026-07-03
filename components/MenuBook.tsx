@@ -3,11 +3,13 @@
 import HTMLFlipBook from "react-pageflip";
 import {
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
 } from "react";
 import type { Category, Menu, MenuItem } from "@/lib/types";
 import { useCart } from "@/lib/cart";
+import { useLang } from "@/lib/i18n";
 import { playPageFlip } from "@/lib/sounds";
 
 export type MenuBookHandle = {
@@ -46,6 +48,7 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
   const categories = menu.categories;
   const currency = menu.restaurant.currency;
   const logoUrl = menu.restaurant.logoUrl;
+  const { t } = useLang();
 
   const pf = () => bookRef.current?.pageFlip?.();
 
@@ -130,7 +133,7 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
           )}
           <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/40" />
           <p className="sans absolute inset-x-0 bottom-7 text-center text-[11px] tracking-[0.3em] text-[#e7cd8b]/70 drop-shadow">
-            açmak için köşeye dokun →
+            {t("tapToOpen")}
           </p>
         </div>
       </Page>
@@ -159,7 +162,7 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
           <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/30" />
           <div className="relative z-10 text-2xl text-[#c8a34c]">◆</div>
           <p className="serif relative z-10 mt-5 text-2xl italic text-[#e7cd8b]">
-            Afiyet olsun
+            {t("bonAppetit")}
           </p>
           <p className="sans relative z-10 mt-3 text-[11px] uppercase tracking-[0.3em] text-[#c8a34c]/80">
             {menu.restaurant.name}
@@ -214,61 +217,96 @@ function MenuPage({
   currency: string;
   onOpen: (item: MenuItem) => void;
 }) {
-  const { add } = useCart();
   return (
     <div className="paper flex h-full flex-col p-5 md:p-6">
       <h2 className="serif mb-1 text-2xl font-bold text-[#e7cd8b]">{cat.name}</h2>
       <div className="mb-3 h-px w-full bg-gradient-to-r from-[#c8a34c]/70 via-[#c8a34c]/25 to-transparent" />
       <ul className="thin-scroll flex-1 space-y-1 overflow-y-auto">
         {cat.items.map((item) => (
-          <li
+          <ItemRow
             key={item.id}
-            onClick={() => onOpen(item)}
-            className={`group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition hover:bg-white/5 ${
-              !item.available ? "opacity-55" : ""
-            }`}
-          >
-            <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-md">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="h-full w-full object-cover"
-              />
-              {!item.available && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/55">
-                  <span className="sans text-[8px] font-bold leading-tight text-white">
-                    YOK
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-baseline justify-between gap-2">
-                <h3 className="serif truncate text-base font-semibold text-ink">
-                  {item.name}
-                </h3>
-                <span className="serif whitespace-nowrap text-sm font-bold text-accent">
-                  {item.price} {currency}
-                </span>
-              </div>
-              <p className="sans line-clamp-1 text-xs text-ink/60">
-                {item.description}
-              </p>
-            </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                add(item);
-              }}
-              disabled={!item.available}
-              className="sans flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-[#17130d] transition enabled:hover:brightness-110 disabled:bg-white/10 disabled:text-white/30"
-              aria-label="Sepete ekle"
-            >
-              +
-            </button>
-          </li>
+            item={item}
+            currency={currency}
+            onOpen={onOpen}
+          />
         ))}
       </ul>
     </div>
+  );
+}
+
+function ItemRow({
+  item,
+  currency,
+  onOpen,
+}: {
+  item: MenuItem;
+  currency: string;
+  onOpen: (item: MenuItem) => void;
+}) {
+  const { add } = useCart();
+  const { t } = useLang();
+  const ref = useRef<HTMLLIElement>(null);
+
+  // StPageFlip olay dinleyicisini native olarak DOM'a ekliyor; React'in
+  // stopPropagation'ı geç kalıyor. O yüzden native mousedown/touch/pointer
+  // olaylarını burada durdurup sayfanın çevrilmesini engelliyoruz.
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const stop = (e: Event) => e.stopPropagation();
+    el.addEventListener("mousedown", stop);
+    el.addEventListener("touchstart", stop, { passive: true });
+    el.addEventListener("pointerdown", stop);
+    return () => {
+      el.removeEventListener("mousedown", stop);
+      el.removeEventListener("touchstart", stop);
+      el.removeEventListener("pointerdown", stop);
+    };
+  }, []);
+
+  return (
+    <li
+      ref={ref}
+      onClick={() => onOpen(item)}
+      className={`group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition hover:bg-white/5 ${
+        !item.available ? "opacity-55" : ""
+      }`}
+    >
+      <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-md">
+        <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+        {!item.available && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/55">
+            <span className="sans text-[8px] font-bold leading-tight text-white">
+              {t("na")}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-2">
+          <h3 className="serif truncate text-base font-semibold text-[#E6D2B9]">
+            {item.name}
+          </h3>
+          <span className="serif whitespace-nowrap text-sm font-bold text-[#c8a34c]">
+            {item.price} {currency}
+          </span>
+        </div>
+        <p className="sans line-clamp-1 text-xs text-[#c8a34c]/75">
+          {item.description}
+        </p>
+      </div>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          add(item);
+        }}
+        disabled={!item.available}
+        className="sans flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-[#17130d] transition enabled:hover:brightness-110 disabled:bg-white/10 disabled:text-white/30"
+        aria-label="Sepete ekle"
+      >
+        +
+      </button>
+    </li>
   );
 }

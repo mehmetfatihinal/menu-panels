@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Category, Menu, MenuItem } from "@/lib/types";
 import UploadButton from "./UploadButton";
 import BulkImport from "./BulkImport";
+import { useLang } from "@/lib/i18n";
 
 type ProductDraft = {
   categoryId: string;
@@ -28,6 +29,7 @@ export default function MenuManager() {
   const [category, setCategory] = useState<CategoryDraft | null>(null);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const { t } = useLang();
 
   const load = async () => {
     const m = await fetch("/api/menu", { cache: "no-store" }).then((r) => r.json());
@@ -49,13 +51,13 @@ export default function MenuManager() {
   };
 
   const removeProduct = async (item: MenuItem) => {
-    if (!confirm(`"${item.name}" silinsin mi?`)) return;
+    if (!confirm(`"${item.name}" — ${t("confirmDelProduct")}`)) return;
     await fetch(`/api/products?id=${item.id}`, { method: "DELETE" });
     load();
   };
 
   const removeCategory = async (cat: Category) => {
-    if (!confirm(`"${cat.name}" kategorisi ve içindeki ${cat.items.length} ürün silinsin mi?`)) return;
+    if (!confirm(`"${cat.name}" — ${t("confirmDelCategory")}`)) return;
     await fetch(`/api/categories?id=${cat.id}`, { method: "DELETE" });
     load();
   };
@@ -101,21 +103,21 @@ export default function MenuManager() {
     load();
   };
 
-  if (!menu) return <div className="p-8 text-gray-400">Yükleniyor…</div>;
+  if (!menu) return <div className="p-8 text-gray-400">{t("uploading")}</div>;
 
   return (
     <div className="p-4 md:p-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Menü Yönetimi</h1>
-          <p className="text-sm text-gray-500">Kategori ve ürünleri düzenle</p>
+          <h1 className="text-2xl font-bold">{t("navMenu")}</h1>
+          <p className="text-sm text-gray-500">{t("mmSub")}</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => setBulkOpen(true)}
             className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
-            Toplu Ekle
+            {t("bulkAdd")}
           </button>
           <button
             onClick={() =>
@@ -123,7 +125,7 @@ export default function MenuManager() {
             }
             className="rounded-lg bg-[#1c1712] px-4 py-2.5 text-sm font-medium text-white hover:opacity-90"
           >
-            + Kategori Ekle
+            {t("addCategory")}
           </button>
         </div>
       </div>
@@ -144,8 +146,8 @@ export default function MenuManager() {
               <div className="flex-1">
                 <div className="font-semibold">{cat.name}</div>
                 <div className="text-xs text-gray-400">
-                  {cat.items.length} ürün
-                  {cat.cover.video ? " · 🎬 video" : ""}
+                  {cat.items.length} {t("productsWord")}
+                  {cat.cover.video ? ` · 🎬 ${t("videoTag")}` : ""}
                 </div>
               </div>
               <button
@@ -159,13 +161,13 @@ export default function MenuManager() {
                 }
                 className="rounded-md px-2.5 py-1.5 text-xs text-gray-600 hover:bg-gray-100"
               >
-                Düzenle
+                {t("edit")}
               </button>
               <button
                 onClick={() => removeCategory(cat)}
                 className="rounded-md px-2.5 py-1.5 text-xs text-accent hover:bg-accent/10"
               >
-                Sil
+                {t("del")}
               </button>
               <button
                 onClick={() =>
@@ -178,16 +180,16 @@ export default function MenuManager() {
                     available: true,
                   })
                 }
-                className="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:brightness-110"
+                className="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-[#17130d] hover:brightness-110"
               >
-                + Ürün
+                {t("addProduct")}
               </button>
             </div>
 
             <ul className="divide-y divide-gray-50">
               {cat.items.length === 0 && (
                 <li className="px-5 py-6 text-center text-sm text-gray-400">
-                  Bu kategoride ürün yok.
+                  {t("noProductsInCat")}
                 </li>
               )}
               {cat.items.map((item) => (
@@ -208,7 +210,7 @@ export default function MenuManager() {
                   </div>
                   <button
                     onClick={() => toggle(item)}
-                    title={item.available ? "Sipariş açık" : "Kapalı"}
+                    title={item.available ? t("orderOpen") : t("closedLabel")}
                     className={`relative h-6 w-11 flex-shrink-0 rounded-full transition ${
                       item.available ? "bg-emerald-500" : "bg-gray-300"
                     }`}
@@ -233,13 +235,13 @@ export default function MenuManager() {
                     }
                     className="rounded-md px-2.5 py-1.5 text-xs text-gray-600 hover:bg-gray-100"
                   >
-                    Düzenle
+                    {t("edit")}
                   </button>
                   <button
                     onClick={() => removeProduct(item)}
                     className="rounded-md px-2.5 py-1.5 text-xs text-accent hover:bg-accent/10"
                   >
-                    Sil
+                    {t("del")}
                   </button>
                 </li>
               ))}
@@ -251,27 +253,26 @@ export default function MenuManager() {
       {/* Ürün formu */}
       {product && (
         <Modal
-          title={product.id ? "Ürünü Düzenle" : "Yeni Ürün"}
+          title={product.id ? t("editProduct") : t("newProduct")}
           onClose={() => setProduct(null)}
         >
-          <Field label="Ürün adı">
+          <Field label={t("productName")}>
             <input
               value={product.name}
               onChange={(e) => setProduct({ ...product, name: e.target.value })}
               className="input"
-              placeholder="ör. Adana Kebap"
+              placeholder="Adana Kebap"
             />
           </Field>
-          <Field label="Açıklama">
+          <Field label={t("description")}>
             <textarea
               value={product.description}
               onChange={(e) => setProduct({ ...product, description: e.target.value })}
               className="input h-20 resize-none"
-              placeholder="Kısa açıklama"
             />
           </Field>
           <div className="grid grid-cols-2 gap-3">
-            <Field label={`Fiyat (${currency})`}>
+            <Field label={`${t("price")} (${currency})`}>
               <input
                 type="number"
                 value={product.price}
@@ -280,7 +281,7 @@ export default function MenuManager() {
                 placeholder="0"
               />
             </Field>
-            <Field label="Sipariş durumu">
+            <Field label={t("orderStatusLabel")}>
               <button
                 onClick={() => setProduct({ ...product, available: !product.available })}
                 className={`h-[42px] w-full rounded-lg text-sm font-medium ${
@@ -289,11 +290,11 @@ export default function MenuManager() {
                     : "bg-gray-100 text-gray-500"
                 }`}
               >
-                {product.available ? "Açık" : "Kapalı"}
+                {product.available ? t("openState") : t("closedState")}
               </button>
             </Field>
           </div>
-          <Field label="Görsel (URL yapıştır veya bilgisayardan yükle)">
+          <Field label={t("imageUrlOrUpload")}>
             <input
               value={product.image}
               onChange={(e) => setProduct({ ...product, image: e.target.value })}
@@ -302,7 +303,7 @@ export default function MenuManager() {
             />
             <UploadButton
               accept="image/*"
-              label="Bilgisayardan görsel yükle"
+              label={t("uploadImage")}
               onUploaded={(url) => setProduct({ ...product, image: url })}
             />
           </Field>
@@ -319,13 +320,13 @@ export default function MenuManager() {
               disabled={busy}
               className="flex-1 rounded-lg bg-accent py-2.5 font-medium text-white hover:brightness-110 disabled:opacity-50"
             >
-              {busy ? "Kaydediliyor…" : "Kaydet"}
+              {busy ? t("saving") : t("save")}
             </button>
             <button
               onClick={() => setProduct(null)}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-gray-600 hover:bg-gray-50"
             >
-              Vazgeç
+              {t("cancel")}
             </button>
           </div>
         </Modal>
@@ -334,18 +335,17 @@ export default function MenuManager() {
       {/* Kategori formu */}
       {category && (
         <Modal
-          title={category.id ? "Kategoriyi Düzenle" : "Yeni Kategori"}
+          title={category.id ? t("editCategory") : t("newCategory")}
           onClose={() => setCategory(null)}
         >
-          <Field label="Kategori adı">
+          <Field label={t("categoryName")}>
             <input
               value={category.name}
               onChange={(e) => setCategory({ ...category, name: e.target.value })}
               className="input"
-              placeholder="ör. Tatlılar"
             />
           </Field>
-          <Field label="Kapak görseli (URL veya bilgisayardan yükle)">
+          <Field label={t("coverImageLabel")}>
             <input
               value={category.coverSrc}
               onChange={(e) => setCategory({ ...category, coverSrc: e.target.value })}
@@ -354,7 +354,7 @@ export default function MenuManager() {
             />
             <UploadButton
               accept="image/*"
-              label="Bilgisayardan görsel yükle"
+              label={t("uploadImage")}
               onUploaded={(url) => setCategory({ ...category, coverSrc: url })}
             />
             {category.coverSrc && (
@@ -365,7 +365,7 @@ export default function MenuManager() {
               />
             )}
           </Field>
-          <Field label="Kapak videosu (opsiyonel — büyüyen menü)">
+          <Field label={t("coverVideoLabel")}>
             <input
               value={category.coverVideo}
               onChange={(e) => setCategory({ ...category, coverVideo: e.target.value })}
@@ -374,7 +374,7 @@ export default function MenuManager() {
             />
             <UploadButton
               accept="video/*"
-              label="Bilgisayardan video yükle"
+              label={t("uploadVideo")}
               onUploaded={(url) => setCategory({ ...category, coverVideo: url })}
             />
             {category.coverVideo && (
@@ -394,13 +394,13 @@ export default function MenuManager() {
               disabled={busy}
               className="flex-1 rounded-lg bg-accent py-2.5 font-medium text-white hover:brightness-110 disabled:opacity-50"
             >
-              {busy ? "Kaydediliyor…" : "Kaydet"}
+              {busy ? t("saving") : t("save")}
             </button>
             <button
               onClick={() => setCategory(null)}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-gray-600 hover:bg-gray-50"
             >
-              Vazgeç
+              {t("cancel")}
             </button>
           </div>
         </Modal>

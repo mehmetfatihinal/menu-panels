@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useCart } from "@/lib/cart";
+import { useLang } from "@/lib/i18n";
 
 export default function Cart({
   table,
@@ -18,6 +19,7 @@ export default function Cart({
   onClose: () => void;
 }) {
   const { lines, setQty, remove, clear, total, count } = useCart();
+  const { t } = useLang();
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -66,9 +68,9 @@ export default function Cart({
           >
             <header className="flex items-center justify-between border-b border-ink/10 px-5 py-4">
               <div>
-                <h2 className="serif text-xl font-bold text-ink">Siparişin</h2>
+                <h2 className="serif text-xl font-bold text-ink">{t("yourOrder")}</h2>
                 <p className="sans text-xs text-ink/60">
-                  {table === "Genel" ? "Ortak menü" : `Masa ${table}`}
+                  {table === "Genel" ? t("sharedMenuShort") : `${t("table")} ${table}`}
                 </p>
               </div>
               <button
@@ -86,28 +88,26 @@ export default function Cart({
                     ✓
                   </div>
                   <h3 className="serif mt-4 text-xl font-bold text-ink">
-                    Siparişin alındı!
+                    {t("orderReceived")}
                   </h3>
                   <p className="sans mt-1 text-ink/70">
-                    Sipariş no: <b>{done}</b>
+                    {t("orderNo")}: <b>{done}</b>
                   </p>
                   <p className="sans mt-1 text-sm text-ink/60">
-                    {table === "Genel" ? "Ortak menü" : `Masa ${table}`} — mutfağa
-                    iletildi.
+                    {table === "Genel" ? t("sharedMenuShort") : `${t("table")} ${table}`}{" "}
+                    — {t("sentToKitchen")}
                   </p>
                   <button
                     onClick={() => setDone(null)}
                     className="sans mt-6 rounded-lg border border-ink/20 px-4 py-2 text-ink hover:bg-paper-dark"
                   >
-                    Menüye dön
+                    {t("backToMenu")}
                   </button>
                 </div>
               ) : lines.length === 0 ? (
                 <div className="mt-16 text-center text-ink/50">
-                  <p className="serif text-lg">Sepetin boş</p>
-                  <p className="sans mt-1 text-sm">
-                    Menüden ürünlere dokunarak ekle.
-                  </p>
+                  <p className="serif text-lg">{t("emptyCart")}</p>
+                  <p className="sans mt-1 text-sm">{t("emptyCartHint")}</p>
                 </div>
               ) : (
                 <ul className="space-y-3">
@@ -130,7 +130,7 @@ export default function Cart({
                             onClick={() => remove(l.item.id)}
                             className="sans text-xs text-accent hover:underline"
                           >
-                            kaldır
+                            {t("remove")}
                           </button>
                         </div>
                         <div className="sans mt-1 text-sm text-ink/60">
@@ -172,7 +172,7 @@ export default function Cart({
                 )}
                 <div className="mb-3 flex items-center justify-between">
                   <span className="sans text-ink/70">
-                    Toplam ({count} ürün)
+                    {t("total")} ({count} {t("items")})
                   </span>
                   <span className="serif text-2xl font-bold text-ink">
                     {total} {currency}
@@ -183,7 +183,7 @@ export default function Cart({
                   disabled={sending}
                   className="sans w-full rounded-xl bg-accent py-3.5 font-semibold text-[#17130d] transition hover:brightness-110 disabled:opacity-50"
                 >
-                  {sending ? "Gönderiliyor…" : "Siparişi Onayla"}
+                  {sending ? t("sending") : t("confirmOrder")}
                 </button>
               </footer>
             )}

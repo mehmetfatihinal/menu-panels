@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import type { MenuItem } from "@/lib/types";
 import { useCart } from "@/lib/cart";
+import { useLang } from "@/lib/i18n";
 
 export default function ProductModal({
   item,
@@ -15,6 +16,7 @@ export default function ProductModal({
   onClose: () => void;
 }) {
   const { add } = useCart();
+  const { t } = useLang();
   const [added, setAdded] = useState(false);
 
   return (
@@ -47,7 +49,7 @@ export default function ProductModal({
               {!item.available && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/55">
                   <span className="sans rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-[#17130d]">
-                    Şu an mevcut değil
+                    {t("notAvailable")}
                   </span>
                 </div>
               )}
@@ -95,9 +97,9 @@ export default function ProductModal({
               >
                 {item.available
                   ? added
-                    ? "Sepete eklendi ✓"
-                    : "Sepete Ekle"
-                  : "Sipariş edilemez"}
+                    ? t("added")
+                    : t("addToCart")
+                  : t("cannotOrder")}
               </button>
             </div>
           </motion.div>

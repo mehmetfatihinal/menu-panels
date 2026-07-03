@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { uploadToStorage } from "@/lib/upload";
+import { useLang } from "@/lib/i18n";
 
 export default function UploadButton({
   accept,
@@ -15,6 +16,7 @@ export default function UploadButton({
   const ref = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const { t } = useLang();
 
   const onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -25,7 +27,7 @@ export default function UploadButton({
       const url = await uploadToStorage(file);
       onUploaded(url);
     } catch (e: any) {
-      setErr(e.message || "Yükleme başarısız");
+      setErr(e.message || t("uploadFailed"));
     } finally {
       setBusy(false);
       if (ref.current) ref.current.value = "";
@@ -48,7 +50,7 @@ export default function UploadButton({
         className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 py-2 text-sm text-gray-600 transition hover:bg-gray-50 disabled:opacity-60"
       >
         {busy ? (
-          "Yükleniyor…"
+          t("uploading")
         ) : (
           <>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

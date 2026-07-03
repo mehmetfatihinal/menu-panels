@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import type { Menu, MenuItem } from "@/lib/types";
 import { CartProvider, useCart } from "@/lib/cart";
+import { LangProvider, useLang } from "@/lib/i18n";
+import LangSwitcher from "./LangSwitcher";
 import AudioController from "./AudioController";
 import ProductModal from "./ProductModal";
 import Cart from "./Cart";
@@ -29,9 +31,11 @@ export default function MenuExperience({
   slug: string;
 }) {
   return (
-    <CartProvider table={`${slug}:${table}`}>
-      <Inner initialMenu={initialMenu} table={table} slug={slug} />
-    </CartProvider>
+    <LangProvider>
+      <CartProvider table={`${slug}:${table}`}>
+        <Inner initialMenu={initialMenu} table={table} slug={slug} />
+      </CartProvider>
+    </LangProvider>
   );
 }
 
@@ -50,6 +54,7 @@ function Inner({
   const [cartOpen, setCartOpen] = useState(false);
   const bookRef = useRef<MenuBookHandle>(null);
   const { count } = useCart();
+  const { t } = useLang();
 
   const categories = menu.categories;
   const currency = menu.restaurant.currency;
@@ -57,7 +62,7 @@ function Inner({
   // Admin stok değişikliklerini yansıtmak için hafif güncelleme
   // (yalnızca içerik gerçekten değiştiyse -> kitap gereksiz yere sıfırlanmaz)
   useEffect(() => {
-    const t = setInterval(async () => {
+    const timer = setInterval(async () => {
       try {
         const res = await fetch(`/api/public/menu?slug=${encodeURIComponent(slug)}`, {
           cache: "no-store",
@@ -69,7 +74,7 @@ function Inner({
         );
       } catch {}
     }, 12000);
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, [slug]);
 
   return (
@@ -81,10 +86,11 @@ function Inner({
             {menu.restaurant.name}
           </h1>
           <p className="sans text-[11px] text-white/60">
-            {table === "Genel" ? "Ortak Menü" : `Masa ${table}`}
+            {table === "Genel" ? t("sharedMenu") : `${t("table")} ${table}`}
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <LangSwitcher />
           <AudioController />
           <button
             onClick={() => setCartOpen(true)}
@@ -95,7 +101,7 @@ function Inner({
               <circle cx="20" cy="21" r="1" />
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
-            <span className="text-sm font-semibold">Sepet</span>
+            <span className="text-sm font-semibold">{t("cart")}</span>
             {count > 0 && (
               <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-[#17130d]">
                 {count}
@@ -150,7 +156,7 @@ function Inner({
         </div>
 
         <p className="sans mt-5 text-center text-sm text-white/50">
-          Sayfayı çevirmek için köşeden sürükle ya da okları kullan
+          {t("flipHint")}
         </p>
       </main>
 

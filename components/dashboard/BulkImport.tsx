@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLang } from "@/lib/i18n";
 
 type ParsedItem = { name: string; price: number; description: string };
 type ParsedCat = { name: string; items: ParsedItem[] };
@@ -53,6 +54,7 @@ export default function BulkImport({
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const { t } = useLang();
 
   const parsed = useMemo(() => parseBulk(text), [text]);
   const totalItems = parsed.reduce((s, c) => s + c.items.length, 0);
@@ -69,10 +71,12 @@ export default function BulkImport({
     const data = await res.json();
     setBusy(false);
     if (!res.ok) {
-      setResult(data.error || "Eklenemedi");
+      setResult(data.error || "—");
       return;
     }
-    setResult(`✓ ${data.categories} kategori, ${data.products} ürün eklendi.`);
+    setResult(
+      `✓ ${data.categories} ${t("categoriesWord")}, ${data.products} ${t("productsWord")} +`
+    );
     onDone();
     setText("");
   };
@@ -85,7 +89,7 @@ export default function BulkImport({
         className="relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl"
       >
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-          <h3 className="text-lg font-bold">Toplu Ekle</h3>
+          <h3 className="text-lg font-bold">{t("bulkAdd")}</h3>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700">
             ✕
           </button>
@@ -94,9 +98,9 @@ export default function BulkImport({
         <div className="grid flex-1 grid-cols-1 gap-4 overflow-y-auto p-5 md:grid-cols-2">
           <div>
             <p className="mb-2 text-xs text-gray-500">
-              <b>#</b> ile başlayan satır = kategori. Diğer satırlar ürün:
+              {t("bulkRule")}
               <br />
-              <code className="text-[11px]">Ad | fiyat | açıklama</code> (fiyat/açıklama isteğe bağlı)
+              <code className="text-[11px]">{t("bulkFmt")}</code>
             </p>
             <textarea
               value={text}
@@ -108,19 +112,17 @@ export default function BulkImport({
               onClick={() => setText(EXAMPLE)}
               className="mt-2 text-xs text-accent hover:underline"
             >
-              Örnek doldur
+              {t("bulkExample")}
             </button>
           </div>
 
           <div className="rounded-lg bg-gray-50 p-3">
             <div className="mb-2 text-xs font-medium text-gray-500">
-              Önizleme — {parsed.length} kategori, {totalItems} ürün
+              {t("bulkPreview")} — {parsed.length} {t("categoriesWord")}, {totalItems} {t("productsWord")}
             </div>
             <div className="max-h-64 space-y-2 overflow-y-auto">
               {parsed.length === 0 ? (
-                <p className="text-sm text-gray-400">
-                  Sol tarafa yapıştır, burada önizleme görünecek.
-                </p>
+                <p className="text-sm text-gray-400">{t("bulkPasteHint")}</p>
               ) : (
                 parsed.map((c, i) => (
                   <div key={i}>
@@ -147,14 +149,14 @@ export default function BulkImport({
               onClick={onClose}
               className="rounded-lg border border-gray-200 px-4 py-2.5 text-gray-600 hover:bg-gray-50"
             >
-              Kapat
+              {t("bulkClose")}
             </button>
             <button
               onClick={submit}
               disabled={busy || totalItems === 0}
               className="rounded-lg bg-accent px-5 py-2.5 font-medium text-[#17130d] hover:brightness-110 disabled:opacity-50"
             >
-              {busy ? "Ekleniyor…" : `${totalItems} ürünü ekle`}
+              {busy ? t("bulkAdding") : `${totalItems} ${t("productsWord")} +`}
             </button>
           </div>
         </div>
