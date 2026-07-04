@@ -20,6 +20,10 @@
 html,
 body {
   height: 100%;
+  /* Mobilde yatay kayma ve zıplamayı engelle */
+  max-width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 body {
@@ -106,6 +110,10 @@ body {
 /* Kitabın kendi gölgeleri ve köşe kıvrımı zaten kütüphaneden gelir */
 .stf__parent {
   margin: 0 auto;
+  max-width: 100%;
+  /* Yatay dokunma jesti tarayıcıyı kaydırmasın -> sayfa çevirmeye gitsin.
+     Dikey kaydırma (menü listesi) serbest kalır. */
+  touch-action: pan-y;
 }
 
 @keyframes floatUp {
