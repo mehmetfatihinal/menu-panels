@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -60,12 +59,6 @@ export default function LoginPage() {
           {busy ? "Giriş yapılıyor…" : "Giriş Yap"}
         </button>
       </form>
-      <p className="mt-5 text-center text-sm text-white/50">
-        Hesabın yok mu?{" "}
-        <Link href="/signup" className="text-accent-2 hover:underline">
-          İşletme kaydı oluştur
-        </Link>
-      </p>
     </AuthShell>
   );
 }

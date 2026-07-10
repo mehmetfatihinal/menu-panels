@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Menu Panels — Dijital Menü",
+  title: "Qr MenuPanels — Dijital Menü",
   description: "QR ile açılan interaktif katalog menü ve sipariş sistemi",
 };
 
