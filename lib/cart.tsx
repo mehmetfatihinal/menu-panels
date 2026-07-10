@@ -2,16 +2,22 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { CartLine, MenuItem } from "./types";
+import type { CartSelection } from "./options";
+import { lineKeyFor, optionsUnitPrice, lineTotal, roundMoney } from "./options";
 import { playPop } from "./sounds";
+
+type AddOptions = { selections?: CartSelection[]; note?: string };
 
 type CartContextValue = {
   lines: CartLine[];
-  add: (item: MenuItem) => void;
-  remove: (itemId: string) => void;
-  setQty: (itemId: string, qty: number) => void;
+  add: (item: MenuItem, opts?: AddOptions) => void;
+  remove: (lineKey: string) => void;
+  setQty: (lineKey: string, qty: number) => void;
   clear: () => void;
   count: number;
   total: number;
+  lineKey: (l: CartLine) => string;
+  lineUnitPrice: (l: CartLine) => number;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -44,41 +50,66 @@ export function CartProvider({
     } catch {}
   }, [lines, storageKey, hydrated]);
 
-  const add = (item: MenuItem) => {
+  // Satır anahtarı = ürün + seçili choiceId'ler (not hariç). Aynı ürün+aynı seçim birleşir.
+  const keyOf = (l: CartLine) => lineKeyFor(l.item.id, l.selections);
+  const unitOf = (l: CartLine) => optionsUnitPrice(l.item.price, l.selections);
+
+  const add = (item: MenuItem, opts?: AddOptions) => {
     if (!item.available) return;
+    const selections =
+      opts?.selections && opts.selections.length ? opts.selections : undefined;
+    const note = opts?.note?.trim() ? opts.note.trim() : undefined;
+    const key = lineKeyFor(item.id, selections);
     setLines((prev) => {
-      const existing = prev.find((l) => l.item.id === item.id);
+      const existing = prev.find((l) => keyOf(l) === key);
       if (existing) {
         return prev.map((l) =>
-          l.item.id === item.id ? { ...l, qty: l.qty + 1 } : l
+          keyOf(l) === key ? { ...l, qty: l.qty + 1 } : l
         );
       }
-      return [...prev, { item, qty: 1 }];
+      return [...prev, { item, qty: 1, selections, note }];
     });
     playPop();
   };
 
-  const remove = (itemId: string) =>
-    setLines((prev) => prev.filter((l) => l.item.id !== itemId));
+  const remove = (key: string) =>
+    setLines((prev) => prev.filter((l) => keyOf(l) !== key));
 
-  const setQty = (itemId: string, qty: number) =>
+  const setQty = (key: string, qty: number) =>
     setLines((prev) =>
       qty <= 0
-        ? prev.filter((l) => l.item.id !== itemId)
-        : prev.map((l) => (l.item.id === itemId ? { ...l, qty } : l))
+        ? prev.filter((l) => keyOf(l) !== key)
+        : prev.map((l) => (keyOf(l) === key ? { ...l, qty } : l))
     );
 
   const clear = () => setLines([]);
 
   const count = useMemo(() => lines.reduce((s, l) => s + l.qty, 0), [lines]);
   const total = useMemo(
-    () => lines.reduce((s, l) => s + l.qty * l.item.price, 0),
+    () =>
+      roundMoney(
+        lines.reduce(
+          (s, l) =>
+            s + lineTotal(optionsUnitPrice(l.item.price, l.selections), l.qty),
+          0
+        )
+      ),
     [lines]
   );
 
   return (
     <CartContext.Provider
-      value={{ lines, add, remove, setQty, clear, count, total }}
+      value={{
+        lines,
+        add,
+        remove,
+        setQty,
+        clear,
+        count,
+        total,
+        lineKey: keyOf,
+        lineUnitPrice: unitOf,
+      }}
     >
       {children}
     </CartContext.Provider>

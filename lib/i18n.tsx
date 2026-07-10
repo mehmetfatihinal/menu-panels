@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import type { I18nText } from "@/lib/types";
 
 export type Lang = "tr" | "de" | "en";
 
@@ -17,6 +18,24 @@ const DICT = {
     added: "Sepete eklendi ✓",
     notAvailable: "Şu an mevcut değil",
     cannotOrder: "Sipariş edilemez",
+    optRequired: "Zorunlu",
+    optOptional: "İsteğe bağlı",
+    optChooseOne: "Bir tane seç",
+    optChooseMulti: "Birden fazla seçebilirsin",
+    included: "dahil",
+    noteLabel: "Not (isteğe bağlı)",
+    notePlaceholder: "Örn. az acılı, soğansız…",
+    optMulti: "Çoklu",
+    optionsTitle: "Seçenekler",
+    addGroup: "Grup ekle",
+    groupName: "Grup adı",
+    choiceName: "Seçenek",
+    addChoice: "Seçenek ekle",
+    extraFee: "Ek ücret",
+    optDefault: "Varsayılan",
+    copyFromProduct: "Başka üründen kopyala",
+    otherLangs: "Diğer diller",
+    hideLangs: "Gizle",
     na: "YOK",
     yourOrder: "Siparişin",
     sharedMenuShort: "Ortak menü",
@@ -93,6 +112,8 @@ const DICT = {
     save: "Kaydet",
     saving: "Kaydediliyor…",
     cancel: "Vazgeç",
+    copyToAllLangs: "Tüm dillere kopyala",
+    productNo: "No",
     editCategory: "Kategoriyi Düzenle",
     newCategory: "Yeni Kategori",
     categoryName: "Kategori adı",
@@ -170,6 +191,24 @@ const DICT = {
     added: "Hinzugefügt ✓",
     notAvailable: "Zurzeit nicht verfügbar",
     cannotOrder: "Nicht bestellbar",
+    optRequired: "Erforderlich",
+    optOptional: "Optional",
+    optChooseOne: "Eins auswählen",
+    optChooseMulti: "Mehrere möglich",
+    included: "inklusive",
+    noteLabel: "Anmerkung (optional)",
+    notePlaceholder: "z. B. wenig scharf, ohne Zwiebeln…",
+    optMulti: "Mehrfach",
+    optionsTitle: "Optionen",
+    addGroup: "Gruppe hinzufügen",
+    groupName: "Gruppenname",
+    choiceName: "Option",
+    addChoice: "Option hinzufügen",
+    extraFee: "Aufpreis",
+    optDefault: "Standard",
+    copyFromProduct: "Von Produkt kopieren",
+    otherLangs: "Andere Sprachen",
+    hideLangs: "Ausblenden",
     na: "N.V.",
     yourOrder: "Deine Bestellung",
     sharedMenuShort: "Speisekarte",
@@ -242,6 +281,8 @@ const DICT = {
     save: "Speichern",
     saving: "Wird gespeichert…",
     cancel: "Abbrechen",
+    copyToAllLangs: "In alle Sprachen kopieren",
+    productNo: "Nr.",
     editCategory: "Kategorie bearbeiten",
     newCategory: "Neue Kategorie",
     categoryName: "Kategoriename",
@@ -315,6 +356,24 @@ const DICT = {
     added: "Added ✓",
     notAvailable: "Currently unavailable",
     cannotOrder: "Cannot order",
+    optRequired: "Required",
+    optOptional: "Optional",
+    optChooseOne: "Choose one",
+    optChooseMulti: "Choose any",
+    included: "included",
+    noteLabel: "Note (optional)",
+    notePlaceholder: "e.g. mild, no onions…",
+    optMulti: "Multiple",
+    optionsTitle: "Options",
+    addGroup: "Add group",
+    groupName: "Group name",
+    choiceName: "Choice",
+    addChoice: "Add choice",
+    extraFee: "Extra fee",
+    optDefault: "Default",
+    copyFromProduct: "Copy from product",
+    otherLangs: "Other languages",
+    hideLangs: "Hide",
     na: "N/A",
     yourOrder: "Your order",
     sharedMenuShort: "Shared menu",
@@ -387,6 +446,8 @@ const DICT = {
     save: "Save",
     saving: "Saving…",
     cancel: "Cancel",
+    copyToAllLangs: "Copy to all languages",
+    productNo: "No.",
     editCategory: "Edit category",
     newCategory: "New category",
     categoryName: "Category name",
@@ -458,10 +519,17 @@ const Ctx = createContext<{
   t: (k: TKey) => string;
 }>({ lang: "tr", setLang: () => {}, t: (k) => k });
 
-export function LangProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("tr");
+export function LangProvider({
+  children,
+  initialLang,
+}: {
+  children: React.ReactNode;
+  initialLang?: Lang; // işletmenin varsayılan dili (kayıtlı tercih yoksa)
+}) {
+  const [lang, setLangState] = useState<Lang>(initialLang ?? "tr");
 
   useEffect(() => {
+    // Kayıtlı kullanıcı tercihi işletme varsayılanını EZER.
     const saved = localStorage.getItem("mp-lang") as Lang | null;
     if (saved && ["tr", "de", "en"].includes(saved)) setLangState(saved);
   }, []);
@@ -480,6 +548,15 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
 
 export function useLang() {
   return useContext(Ctx);
+}
+
+// Çok dilli menü içeriğinden aktif dili seç; yoksa fallback (de→tr→en) ya da eski düz metin.
+export function pickLang(
+  i18n: I18nText | null | undefined,
+  fallback: string,
+  lang: Lang
+): string {
+  return (i18n && (i18n[lang] || i18n.de || i18n.tr || i18n.en)) || fallback || "";
 }
 
 // Sipariş durumunu yerelleştir

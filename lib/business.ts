@@ -1,5 +1,24 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Menu, Category, MenuItem } from "@/lib/types";
+import type { Menu, Category, MenuItem, I18nText } from "@/lib/types";
+import type { Lang } from "@/lib/i18n";
+
+// Gelen i18n nesnesini temizle: yalnızca dolu tr/de/en string alanları; hiçbiri yoksa undefined
+export function cleanI18n(o: unknown): I18nText | undefined {
+  if (!o || typeof o !== "object") return undefined;
+  const src = o as Record<string, unknown>;
+  const out: I18nText = {};
+  for (const k of ["tr", "de", "en"] as const) {
+    const v = src[k];
+    if (typeof v === "string" && v.trim() !== "") out[k] = v;
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
+// i18n'den eski (tek dilli) düz metni üret: öncelik de → tr → en
+export function legacyFromI18n(o: I18nText | undefined, fallback = ""): string {
+  if (!o) return fallback;
+  return o.de || o.tr || o.en || fallback;
+}
 
 export type BusinessRow = {
   id: string;
@@ -9,6 +28,7 @@ export type BusinessRow = {
   tagline: string;
   currency: string;
   logo_url: string;
+  default_lang?: string;
 };
 
 // Supabase kayıtlarını uygulamanın Menu tipine dönüştürür
@@ -20,6 +40,7 @@ export function buildMenu(
   const cats: Category[] = categories.map((c) => ({
     id: c.id,
     name: c.name,
+    nameI18n: c.name_i18n ?? undefined,
     cover: {
       type: c.cover_video ? "video" : "image",
       src: c.cover_src || "",
@@ -30,12 +51,17 @@ export function buildMenu(
       .map(
         (p): MenuItem => ({
           id: p.id,
+          code: p.code ?? undefined,
           name: p.name,
           description: p.description || "",
           price: Number(p.price),
           image: p.image || "",
           available: p.available,
           tags: p.tags || [],
+          nameI18n: p.name_i18n ?? undefined,
+          descriptionI18n: p.description_i18n ?? undefined,
+          allergens: p.allergens ?? [],
+          options: Array.isArray(p.options) ? p.options : [],
         })
       ),
   }));
@@ -46,6 +72,7 @@ export function buildMenu(
       tagline: business.tagline || "",
       currency: business.currency || "₺",
       logoUrl: business.logo_url || "",
+      defaultLang: ((business.default_lang as Lang) || "tr") as Lang,
     },
     categories: cats,
   };

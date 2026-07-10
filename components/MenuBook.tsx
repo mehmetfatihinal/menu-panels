@@ -9,7 +9,7 @@ import {
 } from "react";
 import type { Category, Menu, MenuItem } from "@/lib/types";
 import { useCart } from "@/lib/cart";
-import { useLang } from "@/lib/i18n";
+import { useLang, pickLang } from "@/lib/i18n";
 import { playPageFlip } from "@/lib/sounds";
 
 export type MenuBookHandle = {
@@ -176,6 +176,8 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
 export default MenuBook;
 
 function VisualPage({ cat, tagline }: { cat: Category; tagline: string }) {
+  const { lang } = useLang();
+  const catName = pickLang(cat.nameI18n, cat.name, lang);
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
       {cat.cover.video ? (
@@ -188,11 +190,16 @@ function VisualPage({ cat, tagline }: { cat: Category; tagline: string }) {
           playsInline
           className="h-full w-full object-cover"
         />
-      ) : (
+      ) : cat.cover.src ? (
         <img
           src={cat.cover.src}
-          alt={cat.name}
+          alt={catName}
           className="h-full w-full object-cover"
+        />
+      ) : (
+        <div
+          className="h-full w-full bg-cover bg-center"
+          style={{ backgroundImage: "url('/marble-bg.jpg')" }}
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/20" />
@@ -201,7 +208,7 @@ function VisualPage({ cat, tagline }: { cat: Category; tagline: string }) {
           {tagline}
         </p>
         <h2 className="serif text-3xl font-bold text-white drop-shadow-lg">
-          {cat.name}
+          {catName}
         </h2>
       </div>
     </div>
@@ -217,9 +224,12 @@ function MenuPage({
   currency: string;
   onOpen: (item: MenuItem) => void;
 }) {
+  const { lang } = useLang();
   return (
     <div className="paper flex h-full flex-col p-5 md:p-6">
-      <h2 className="serif mb-1 text-2xl font-bold text-[#e7cd8b]">{cat.name}</h2>
+      <h2 className="serif mb-1 text-2xl font-bold text-[#e7cd8b]">
+        {pickLang(cat.nameI18n, cat.name, lang)}
+      </h2>
       <div className="mb-3 h-px w-full bg-gradient-to-r from-[#c8a34c]/70 via-[#c8a34c]/25 to-transparent" />
       <ul className="thin-scroll flex-1 space-y-1 overflow-y-auto">
         {cat.items.map((item) => (
@@ -245,8 +255,9 @@ function ItemRow({
   onOpen: (item: MenuItem) => void;
 }) {
   const { add } = useCart();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const ref = useRef<HTMLLIElement>(null);
+  const itemName = pickLang(item.nameI18n, item.name, lang);
 
   // StPageFlip olay dinleyicisini native olarak DOM'a ekliyor; React'in
   // stopPropagation'ı geç kalıyor. O yüzden native mousedown/touch/pointer
@@ -274,7 +285,15 @@ function ItemRow({
       }`}
     >
       <div className="relative h-14 w-14 flex-shrink-0 overflow-hidden rounded-md">
-        <img src={item.image} alt={item.name} className="h-full w-full object-cover" />
+        {item.image ? (
+          <img src={item.image} alt={itemName} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-[#2a2118]">
+            <span className="serif text-lg text-[#c8a34c]/50">
+              {itemName.charAt(0)}
+            </span>
+          </div>
+        )}
         {!item.available && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/55">
             <span className="sans text-[8px] font-bold leading-tight text-white">
@@ -286,19 +305,29 @@ function ItemRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
           <h3 className="serif truncate text-base font-semibold text-[#E6D2B9]">
-            {item.name}
+            {item.code && (
+              <span className="mr-1.5 font-normal text-[#c8a34c]/80">
+                {item.code}
+              </span>
+            )}
+            {itemName}
           </h3>
           <span className="serif whitespace-nowrap text-sm font-bold text-[#c8a34c]">
             {item.price} {currency}
           </span>
         </div>
         <p className="sans line-clamp-1 text-xs text-[#c8a34c]/75">
-          {item.description}
+          {pickLang(item.descriptionI18n, item.description, lang)}
         </p>
       </div>
       <button
         onClick={(e) => {
           e.stopPropagation();
+          // Seçenekli ürünlerde doğrudan ekleme yerine modalı aç (zorunlu seçim gerekebilir)
+          if (item.options && item.options.length) {
+            onOpen(item);
+            return;
+          }
           add(item);
         }}
         disabled={!item.available}

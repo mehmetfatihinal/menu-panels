@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import type { Menu, MenuItem } from "@/lib/types";
 import { CartProvider, useCart } from "@/lib/cart";
-import { LangProvider, useLang } from "@/lib/i18n";
+import { LangProvider, useLang, pickLang } from "@/lib/i18n";
 import LangSwitcher from "./LangSwitcher";
 import AudioController from "./AudioController";
 import ProductModal from "./ProductModal";
@@ -31,7 +31,7 @@ export default function MenuExperience({
   slug: string;
 }) {
   return (
-    <LangProvider>
+    <LangProvider initialLang={initialMenu.restaurant.defaultLang}>
       <CartProvider table={`${slug}:${table}`}>
         <Inner initialMenu={initialMenu} table={table} slug={slug} />
       </CartProvider>
@@ -54,7 +54,7 @@ function Inner({
   const [cartOpen, setCartOpen] = useState(false);
   const bookRef = useRef<MenuBookHandle>(null);
   const { count } = useCart();
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const categories = menu.categories;
   const currency = menu.restaurant.currency;
@@ -124,7 +124,7 @@ function Inner({
                 : "bg-white/10 text-white/80 hover:bg-white/20"
             }`}
           >
-            {c.name}
+            {pickLang(c.nameI18n, c.name, lang)}
           </button>
         ))}
       </nav>
