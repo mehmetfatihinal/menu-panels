@@ -125,7 +125,7 @@ export default function Cart({
                     const key = lineKey(l);
                     const unit = lineUnitPrice(l);
                     return (
-                      <li key={key} className="flex gap-3 rounded-xl bg-white/5 p-3">
+                      <li key={key} className="flex gap-3 rounded-xl bg-(--row-hover) p-3">
                         {l.item.image ? (
                           <img
                             src={l.item.image}
@@ -133,8 +133,8 @@ export default function Cart({
                             className="h-16 w-16 flex-shrink-0 rounded-lg object-cover"
                           />
                         ) : (
-                          <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg bg-white/10">
-                            <span className="serif text-xl text-[#c8a34c]/60">
+                          <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg bg-(--thumb-bg)">
+                            <span className="serif text-xl text-accent/60">
                               {pickLang(l.item.nameI18n, l.item.name, lang).charAt(0)}
                             </span>
                           </div>
@@ -217,7 +217,7 @@ export default function Cart({
                 <button
                   onClick={submit}
                   disabled={sending}
-                  className="sans w-full rounded-xl bg-accent py-3.5 font-semibold text-[#17130d] transition hover:brightness-110 disabled:opacity-50"
+                  className="sans w-full rounded-xl bg-accent py-3.5 font-semibold text-(--on-accent) transition hover:brightness-110 disabled:opacity-50"
                 >
                   {sending ? t("sending") : t("confirmOrder")}
                 </button>

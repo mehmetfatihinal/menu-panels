@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import type { Menu, MenuItem } from "@/lib/types";
 import { CartProvider, useCart } from "@/lib/cart";
 import { LangProvider, useLang, pickLang } from "@/lib/i18n";
+import { menuThemeClass } from "@/lib/theme";
 import LangSwitcher from "./LangSwitcher";
 import AudioController from "./AudioController";
 import ProductModal from "./ProductModal";
@@ -16,7 +17,7 @@ const MenuBook = dynamic(() => import("./MenuBook"), {
   ssr: false,
   loading: () => (
     <div className="flex h-full w-full items-center justify-center">
-      <div className="serif animate-pulse text-white/60">Menü açılıyor…</div>
+      <div className="serif animate-pulse text-(--fg-soft)">Menü açılıyor…</div>
     </div>
   ),
 });
@@ -79,14 +80,14 @@ function Inner({
 
   return (
     // Ekran kaymasın: menü tam olarak görünen yüksekliğe (100dvh) sabitlenir
-    <div className="flex h-dvh flex-col overflow-hidden">
+    <div className={`menu-surface ${menuThemeClass(slug)} flex h-dvh flex-col overflow-hidden`}>
       {/* Üst çubuk */}
       <header className="z-30 flex flex-none items-center justify-between gap-2 px-3 py-3">
-        <div className="min-w-0 flex-1 text-white">
+        <div className="min-w-0 flex-1 text-(--fg)">
           <h1 className="serif truncate text-base font-bold leading-tight sm:text-lg">
             {menu.restaurant.name}
           </h1>
-          <p className="sans text-[11px] text-white/60">
+          <p className="sans text-[11px] text-(--fg-soft)">
             {table === "Genel" ? t("sharedMenu") : `${t("table")} ${table}`}
           </p>
         </div>
@@ -95,7 +96,7 @@ function Inner({
           <AudioController />
           <button
             onClick={() => setCartOpen(true)}
-            className="sans relative flex h-11 items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3.5 text-white backdrop-blur transition hover:bg-black/50"
+            className="sans relative flex h-11 items-center gap-2 rounded-full border border-(--chip-border) bg-(--chip-bg) px-3.5 text-(--fg) backdrop-blur transition hover:bg-(--chip-bg-hover)"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="9" cy="21" r="1" />
@@ -104,7 +105,7 @@ function Inner({
             </svg>
             <span className="hidden text-sm font-semibold sm:inline">{t("cart")}</span>
             {count > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-[#17130d]">
+              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-(--on-accent)">
                 {count}
               </span>
             )}
@@ -120,8 +121,8 @@ function Inner({
             onClick={() => bookRef.current?.flipToCategory(i)}
             className={`sans whitespace-nowrap rounded-full px-4 py-1.5 text-sm transition ${
               i === active
-                ? "bg-accent font-semibold text-[#17130d]"
-                : "bg-white/10 text-white/80 hover:bg-white/20"
+                ? "bg-accent font-semibold text-(--on-accent)"
+                : "bg-(--chip-idle-bg) text-(--chip-fg) hover:bg-(--chip-idle-bg-hover)"
             }`}
           >
             {pickLang(c.nameI18n, c.name, lang)}
@@ -143,14 +144,14 @@ function Inner({
             {/* Sayfa çevirme okları (mobilde içeride, masaüstünde dışarıda) */}
             <button
               onClick={() => bookRef.current?.prev()}
-              className="sans absolute left-1 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white transition hover:bg-black/60 md:-left-5 md:h-11 md:w-11"
+              className="sans absolute left-1 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-(--chip-bg) text-(--fg) transition hover:bg-(--chip-bg-hover) md:-left-5 md:h-11 md:w-11"
               aria-label="Önceki sayfa"
             >
               ‹
             </button>
             <button
               onClick={() => bookRef.current?.next()}
-              className="sans absolute right-1 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 text-white transition hover:bg-black/60 md:-right-5 md:h-11 md:w-11"
+              className="sans absolute right-1 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-(--chip-bg) text-(--fg) transition hover:bg-(--chip-bg-hover) md:-right-5 md:h-11 md:w-11"
               aria-label="Sonraki sayfa"
             >
               ›
@@ -158,7 +159,7 @@ function Inner({
           </div>
         </div>
 
-        <p className="sans flex-none py-2 text-center text-xs text-white/50">
+        <p className="sans flex-none py-2 text-center text-xs text-(--fg-faint)">
           {t("flipHint")}
         </p>
       </main>

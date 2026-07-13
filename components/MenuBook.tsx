@@ -105,11 +105,11 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
       onFlip={handleFlip}
       onChangeState={handleState}
     >
-      {/* ÖN KAPAK — kapak görseli/logo mermer üzerinde */}
+      {/* ÖN KAPAK — kapak görseli/logo tema zemini üzerinde */}
       <Page hard className="mp-cover">
         <div
           className="relative h-full w-full bg-cover bg-center"
-          style={{ backgroundImage: "url('/marble-bg.jpg')" }}
+          style={{ backgroundImage: "var(--menu-bg)" }}
         >
           {logoUrl ? (
             <img
@@ -118,21 +118,21 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
               className="absolute inset-0 h-full w-full object-contain"
             />
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/45 px-6 text-center">
-              <div className="mb-4 text-3xl text-[#c8a34c]">◆</div>
-              <h1 className="serif text-4xl font-bold leading-tight text-[#e7cd8b]">
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-(--cover-veil) px-6 text-center">
+              <div className="mb-4 text-3xl text-accent">◆</div>
+              <h1 className="serif text-4xl font-bold leading-tight text-accent-2">
                 {menu.restaurant.name}
               </h1>
               {menu.restaurant.tagline && (
-                <p className="sans mt-4 text-[11px] uppercase tracking-[0.35em] text-[#c8a34c]">
+                <p className="sans mt-4 text-[11px] uppercase tracking-[0.35em] text-accent">
                   {menu.restaurant.tagline}
                 </p>
               )}
-              <div className="mx-auto mt-4 h-px w-16 bg-[#c8a34c]/60" />
+              <div className="mx-auto mt-4 h-px w-16 bg-accent/60" />
             </div>
           )}
-          <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/40" />
-          <p className="sans absolute inset-x-0 bottom-7 text-center text-[11px] tracking-[0.3em] text-[#e7cd8b]/70 drop-shadow">
+          <div className="pointer-events-none absolute inset-3 border border-accent/40" />
+          <p className="sans absolute inset-x-0 bottom-7 text-center text-[11px] tracking-[0.3em] text-accent-2/70 drop-shadow">
             {t("tapToOpen")}
           </p>
         </div>
@@ -152,19 +152,19 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
         </Page>,
       ])}
 
-      {/* ARKA KAPAK — mermer */}
+      {/* ARKA KAPAK — tema zemini */}
       <Page hard className="mp-cover">
         <div
           className="relative flex h-full flex-col items-center justify-center bg-cover bg-center p-8 text-center"
-          style={{ backgroundImage: "url('/marble-bg.jpg')" }}
+          style={{ backgroundImage: "var(--menu-bg)" }}
         >
-          <div className="absolute inset-0 bg-black/45" />
-          <div className="pointer-events-none absolute inset-3 border border-[#c8a34c]/30" />
-          <div className="relative z-10 text-2xl text-[#c8a34c]">◆</div>
-          <p className="serif relative z-10 mt-5 text-2xl italic text-[#e7cd8b]">
+          <div className="absolute inset-0 bg-(--cover-veil)" />
+          <div className="pointer-events-none absolute inset-3 border border-accent/30" />
+          <div className="relative z-10 text-2xl text-accent">◆</div>
+          <p className="serif relative z-10 mt-5 text-2xl italic text-accent-2">
             {t("bonAppetit")}
           </p>
-          <p className="sans relative z-10 mt-3 text-[11px] uppercase tracking-[0.3em] text-[#c8a34c]/80">
+          <p className="sans relative z-10 mt-3 text-[11px] uppercase tracking-[0.3em] text-accent/80">
             {menu.restaurant.name}
           </p>
         </div>
@@ -199,7 +199,7 @@ function VisualPage({ cat, tagline }: { cat: Category; tagline: string }) {
       ) : (
         <div
           className="h-full w-full bg-cover bg-center"
-          style={{ backgroundImage: "url('/marble-bg.jpg')" }}
+          style={{ backgroundImage: "var(--menu-bg)" }}
         />
       )}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-black/20" />
@@ -227,10 +227,10 @@ function MenuPage({
   const { lang } = useLang();
   return (
     <div className="paper flex h-full flex-col p-5 md:p-6">
-      <h2 className="serif mb-1 text-2xl font-bold text-[#e7cd8b]">
+      <h2 className="serif mb-1 text-2xl font-bold text-accent-2">
         {pickLang(cat.nameI18n, cat.name, lang)}
       </h2>
-      <div className="mb-3 h-px w-full bg-gradient-to-r from-[#c8a34c]/70 via-[#c8a34c]/25 to-transparent" />
+      <div className="mb-3 h-px w-full bg-gradient-to-r from-accent/70 via-accent/25 to-transparent" />
       <ul className="thin-scroll flex-1 space-y-1 overflow-y-auto">
         {cat.items.map((item) => (
           <ItemRow
@@ -280,7 +280,7 @@ function ItemRow({
     <li
       ref={ref}
       onClick={() => onOpen(item)}
-      className={`group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition hover:bg-white/5 ${
+      className={`group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition hover:bg-(--row-hover) ${
         !item.available ? "opacity-55" : ""
       }`}
     >
@@ -288,8 +288,8 @@ function ItemRow({
         {item.image ? (
           <img src={item.image} alt={itemName} className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-[#2a2118]">
-            <span className="serif text-lg text-[#c8a34c]/50">
+          <div className="flex h-full w-full items-center justify-center bg-(--thumb-bg)">
+            <span className="serif text-lg text-accent/50">
               {itemName.charAt(0)}
             </span>
           </div>
@@ -304,19 +304,19 @@ function ItemRow({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
-          <h3 className="serif truncate text-base font-semibold text-[#E6D2B9]">
+          <h3 className="serif truncate text-base font-semibold text-(--item-name)">
             {item.code && (
-              <span className="mr-1.5 font-normal text-[#c8a34c]/80">
+              <span className="mr-1.5 font-normal text-accent/80">
                 {item.code}
               </span>
             )}
             {itemName}
           </h3>
-          <span className="serif whitespace-nowrap text-sm font-bold text-[#c8a34c]">
+          <span className="serif whitespace-nowrap text-sm font-bold text-accent">
             {item.price} {currency}
           </span>
         </div>
-        <p className="sans line-clamp-1 text-xs text-[#c8a34c]/75">
+        <p className="sans line-clamp-1 text-xs text-accent/75">
           {pickLang(item.descriptionI18n, item.description, lang)}
         </p>
       </div>
@@ -331,7 +331,7 @@ function ItemRow({
           add(item);
         }}
         disabled={!item.available}
-        className="sans flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-[#17130d] transition enabled:hover:brightness-110 disabled:bg-white/10 disabled:text-white/30"
+        className="sans flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-(--on-accent) transition enabled:hover:brightness-110 disabled:bg-(--chip-idle-bg) disabled:text-(--fg-faint)"
         aria-label="Sepete ekle"
       >
         +

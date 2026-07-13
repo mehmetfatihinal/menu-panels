@@ -89,10 +89,10 @@ export default function ProductModal({
               ) : (
                 <div
                   className="h-full w-full bg-cover bg-center"
-                  style={{ backgroundImage: "url('/marble-bg.jpg')" }}
+                  style={{ backgroundImage: "var(--menu-bg)" }}
                 >
-                  <div className="flex h-full w-full items-center justify-center bg-black/40">
-                    <span className="serif text-6xl text-[#c8a34c]/40">
+                  <div className="flex h-full w-full items-center justify-center bg-(--cover-veil)">
+                    <span className="serif text-6xl text-accent/40">
                       {itemName.charAt(0)}
                     </span>
                   </div>
@@ -100,7 +100,7 @@ export default function ProductModal({
               )}
               {!item.available && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/55">
-                  <span className="sans rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-[#17130d]">
+                  <span className="sans rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-(--on-accent)">
                     {t("notAvailable")}
                   </span>
                 </div>
@@ -258,7 +258,7 @@ export default function ProductModal({
                   setAdded(true);
                   setTimeout(() => setAdded(false), 1200);
                 }}
-                className="sans mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 font-semibold text-[#17130d] transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+                className="sans mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 font-semibold text-(--on-accent) transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {item.available
                   ? added

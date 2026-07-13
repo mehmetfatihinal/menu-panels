@@ -1,12 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  /* Crystal Restaurant — siyah & altın palet */
+  /* Varsayılan tema: koyu mermer & altın */
   --paper: #17130d; /* onyx sayfa zemini */
   --paper-dark: #241d13; /* biraz açık onyx (etiket/hover) */
   --ink: #f1e7d2; /* krem metin */
   --accent: #c8a34c; /* altın */
   --accent-2: #e7cd8b; /* açık altın / şampanya */
+  --on-accent: #17130d; /* altın buton üstündeki metin */
+  --item-name: #e6d2b9; /* menü satırı ürün adı */
+
+  /* Zemin görseli + örtü katmanları */
+  --menu-bg: url("/marble-bg.jpg");
+  --bg-base: #0a0908;
+  --veil-a: rgba(8, 7, 6, 0.6);
+  --veil-b: rgba(8, 7, 6, 0.78);
+  --paper-veil-a: rgba(9, 7, 5, 0.76);
+  --paper-veil-b: rgba(9, 7, 5, 0.86);
+  --cover-veil: rgba(0, 0, 0, 0.45);
+
+  /* Zemin üstü metin ve kontrol yongaları (üst bar, sekmeler, oklar) */
+  --fg: #ffffff;
+  --fg-soft: rgba(255, 255, 255, 0.6);
+  --fg-faint: rgba(255, 255, 255, 0.5);
+  --chip-bg: rgba(0, 0, 0, 0.3);
+  --chip-bg-hover: rgba(0, 0, 0, 0.5);
+  --chip-border: rgba(255, 255, 255, 0.2);
+  --chip-fg: rgba(255, 255, 255, 0.8);
+  --chip-idle-bg: rgba(255, 255, 255, 0.1);
+  --chip-idle-bg-hover: rgba(255, 255, 255, 0.2);
+  --row-hover: rgba(255, 255, 255, 0.05);
+  --thumb-bg: #2a2118;
+}
+
+/* Bonita — PDF menüsündeki pembe kâğıt dokusu + kahve/altın yazı (açık tema) */
+.theme-bonita {
+  --paper: #f6e8e2;
+  --paper-dark: #eedbd2;
+  --ink: #4a3428;
+  --accent: #a4713f;
+  --accent-2: #7c552f;
+  --on-accent: #fff8f2;
+  --item-name: #4a3428;
+
+  --menu-bg: url("/bonita-bg.jpg");
+  --bg-base: #f6e8e2;
+  --veil-a: rgba(250, 240, 235, 0.2);
+  --veil-b: rgba(246, 232, 226, 0.3);
+  --paper-veil-a: rgba(255, 250, 246, 0.1);
+  --paper-veil-b: rgba(255, 250, 246, 0.18);
+  --cover-veil: rgba(252, 244, 240, 0.15);
+
+  --fg: #4a3428;
+  --fg-soft: rgba(74, 52, 40, 0.65);
+  --fg-faint: rgba(74, 52, 40, 0.55);
+  --chip-bg: rgba(255, 255, 255, 0.55);
+  --chip-bg-hover: rgba(255, 255, 255, 0.85);
+  --chip-border: rgba(74, 52, 40, 0.25);
+  --chip-fg: rgba(74, 52, 40, 0.8);
+  --chip-idle-bg: rgba(74, 52, 40, 0.08);
+  --chip-idle-bg-hover: rgba(74, 52, 40, 0.16);
+  --row-hover: rgba(74, 52, 40, 0.06);
+  --thumb-bg: #eadbd0;
 }
 
 @theme inline {
@@ -28,20 +83,30 @@ body {
 
 body {
   background:
-    linear-gradient(rgba(8, 7, 6, 0.6), rgba(8, 7, 6, 0.78)),
-    url("/marble-bg.jpg") center / cover fixed no-repeat,
-    #0a0908;
+    linear-gradient(var(--veil-a), var(--veil-b)),
+    var(--menu-bg) center / cover fixed no-repeat,
+    var(--bg-base);
   color: var(--ink);
   font-family: ui-serif, Georgia, "Times New Roman", serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* Sayfa yüzeyi — kapakla aynı koyu mermer (okunabilirlik için üstte koyu katman) */
+/* Menü kökü — tema sınıfı (ör. .theme-bonita) bu kapsayıcıya uygulanır;
+   zemin body ile aynı katmanlardan oluşur, tema değişkenleriyle boyanır */
+.menu-surface {
+  background:
+    linear-gradient(var(--veil-a), var(--veil-b)),
+    var(--menu-bg) center / cover no-repeat,
+    var(--bg-base);
+  color: var(--ink);
+}
+
+/* Sayfa yüzeyi — kapakla aynı zemin (okunabilirlik için üstte örtü katmanı) */
 .paper {
-  background-color: #14110d;
+  background-color: var(--paper);
   background-image:
-    linear-gradient(rgba(9, 7, 5, 0.76), rgba(9, 7, 5, 0.86)),
-    url("/marble-bg.jpg");
+    linear-gradient(var(--paper-veil-a), var(--paper-veil-b)),
+    var(--menu-bg);
   background-size: cover, cover;
   background-position: center, center;
   background-repeat: no-repeat, no-repeat;
