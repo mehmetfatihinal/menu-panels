@@ -1,23 +1,28 @@
 "use client";
 
-import { useLang, LANGS } from "@/lib/i18n";
+import { useLang, SUPPORTED_LANGS, type Lang } from "@/lib/i18n";
 
-// Koyu zeminler için dil seçici (menü üst çubuğu + panel sidebar)
+// Dil seçim menüsü (menü üst çubuğu + panel sidebar).
+// Seçenekler SUPPORTED_LANGS'ten üretilir; seçim localStorage'a kaydedilir.
 export default function LangSwitcher() {
   const { lang, setLang } = useLang();
   return (
-    <div className="flex items-center gap-0.5 rounded-full border border-(--chip-border) bg-(--chip-bg) p-0.5 backdrop-blur">
-      {LANGS.map((l) => (
-        <button
-          key={l}
-          onClick={() => setLang(l)}
-          className={`sans rounded-full px-2.5 py-1 text-xs font-semibold uppercase transition ${
-            lang === l ? "bg-accent text-(--on-accent)" : "text-(--chip-fg) hover:text-(--fg)"
-          }`}
-        >
-          {l}
-        </button>
-      ))}
+    <div className="relative">
+      <select
+        value={lang}
+        onChange={(e) => setLang(e.target.value as Lang)}
+        aria-label="Language"
+        className="sans h-11 cursor-pointer appearance-none rounded-full border border-(--chip-border) bg-(--chip-bg) pl-3.5 pr-8 text-xs font-semibold text-(--fg) backdrop-blur outline-none transition hover:bg-(--chip-bg-hover)"
+      >
+        {SUPPORTED_LANGS.map((l) => (
+          <option key={l.code} value={l.code}>
+            {l.label}
+          </option>
+        ))}
+      </select>
+      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-(--fg-soft)">
+        ▾
+      </span>
     </div>
   );
 }

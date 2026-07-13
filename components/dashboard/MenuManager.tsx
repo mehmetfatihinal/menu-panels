@@ -7,9 +7,11 @@ import UploadButton from "./UploadButton";
 import BulkImport from "./BulkImport";
 import { useLang, pickLang, type Lang } from "@/lib/i18n";
 
-// Panelde düzenlenecek diller (görüntüleme sırası)
-const LANG_ORDER: Lang[] = ["tr", "de", "en"];
-const LANG_FLAGS: Record<Lang, string> = { tr: "🇹🇷", de: "🇩🇪", en: "🇬🇧" };
+// Panelde düzenlenecek İÇERİK dilleri (görüntüleme sırası).
+// Arayüz dilleri (SUPPORTED_LANGS) bundan bağımsızdır; ürün adları yalnızca bu dillerde tutulur.
+const LANG_ORDER = ["tr", "de", "en"] as const satisfies readonly Lang[];
+type ContentLang = (typeof LANG_ORDER)[number];
+const LANG_FLAGS: Record<ContentLang, string> = { tr: "🇹🇷", de: "🇩🇪", en: "🇬🇧" };
 
 // Çok dilli metinden eski (tek dilli) alanı üret: öncelik de → tr → en
 const legacyOf = (o: I18nText) => o.de || o.tr || o.en || "";

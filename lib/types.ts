@@ -8,7 +8,11 @@ export type Cover = {
 };
 
 // Çok dilli metin (eksik diller olabilir) — {"tr":"...","de":"...","en":"..."}
-export type I18nText = { tr?: string; de?: string; en?: string };
+// Not: dinamik içerik tr/de/en tutar; index imzası pickLang'in herhangi bir
+// arayüz diliyle (fr/ar/ps/prs...) sorgulayabilmesi içindir.
+export type I18nText = { tr?: string; de?: string; en?: string } & {
+  [lang: string]: string | undefined;
+};
 
 export type MenuItem = {
   id: string;
