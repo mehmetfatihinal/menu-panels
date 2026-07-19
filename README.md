@@ -1,4 +1,4 @@
-# Menu Panels
+# Qr MenuPanels
 
 QR ile açılan interaktif **katalog/kitap menü** ve **yönetim paneli**. Gerçek sayfa
 çevirme animasyonu (StPageFlip), kağıt sesi, arka plan müziği, videolu kategori

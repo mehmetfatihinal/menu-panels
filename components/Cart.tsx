@@ -3,7 +3,8 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { useCart } from "@/lib/cart";
-import { useLang } from "@/lib/i18n";
+import { useLang, pickLang } from "@/lib/i18n";
+import { formatMoney, lineTotal } from "@/lib/options";
 
 export default function Cart({
   table,
@@ -18,8 +19,9 @@ export default function Cart({
   open: boolean;
   onClose: () => void;
 }) {
-  const { lines, setQty, remove, clear, total, count } = useCart();
-  const { t } = useLang();
+  const { lines, setQty, remove, clear, total, count, lineKey, lineUnitPrice } =
+    useCart();
+  const { t, lang } = useLang();
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +36,15 @@ export default function Cart({
         body: JSON.stringify({
           slug,
           table,
-          lines: lines.map((l) => ({ id: l.item.id, qty: l.qty })),
+          lines: lines.map((l) => ({
+            id: l.item.id,
+            qty: l.qty,
+            selections: (l.selections ?? []).map((s) => ({
+              groupId: s.groupId,
+              choiceId: s.choiceId,
+            })),
+            note: l.note,
+          })),
         }),
       });
       const data = await res.json();
@@ -111,54 +121,80 @@ export default function Cart({
                 </div>
               ) : (
                 <ul className="space-y-3">
-                  {lines.map((l) => (
-                    <li
-                      key={l.item.id}
-                      className="flex gap-3 rounded-xl bg-white/5 p-3"
-                    >
-                      <img
-                        src={l.item.image}
-                        alt=""
-                        className="h-16 w-16 flex-shrink-0 rounded-lg object-cover"
-                      />
-                      <div className="flex-1">
-                        <div className="flex justify-between gap-2">
-                          <span className="serif font-semibold text-ink">
-                            {l.item.name}
-                          </span>
-                          <button
-                            onClick={() => remove(l.item.id)}
-                            className="sans text-xs text-accent hover:underline"
-                          >
-                            {t("remove")}
-                          </button>
+                  {lines.map((l) => {
+                    const key = lineKey(l);
+                    const unit = lineUnitPrice(l);
+                    return (
+                      <li key={key} className="flex gap-3 rounded-xl bg-(--row-hover) p-3">
+                        {l.item.image ? (
+                          <img
+                            src={l.item.image}
+                            alt=""
+                            className="h-16 w-16 flex-shrink-0 rounded-lg object-cover"
+                          />
+                        ) : (
+                          <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-lg bg-(--thumb-bg)">
+                            <span className="serif text-xl text-accent/60">
+                              {pickLang(l.item.nameI18n, l.item.name, lang).charAt(0)}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex-1">
+                          <div className="flex justify-between gap-2">
+                            <span className="serif font-semibold text-ink">
+                              {pickLang(l.item.nameI18n, l.item.name, lang)}
+                            </span>
+                            <button
+                              onClick={() => remove(key)}
+                              className="sans text-xs text-accent hover:underline"
+                            >
+                              {t("remove")}
+                            </button>
+                          </div>
+                          {l.selections && l.selections.length > 0 && (
+                            <ul className="sans mt-1 space-y-0.5 text-xs text-ink/55">
+                              {l.selections.map((s) => (
+                                <li key={s.choiceId}>
+                                  + {pickLang(s.choiceName_i18n, "", lang)}
+                                  {s.price_delta > 0
+                                    ? ` (+${formatMoney(s.price_delta)} ${currency})`
+                                    : ""}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          {l.note && (
+                            <p className="sans mt-1 text-xs italic text-ink/55">
+                              “{l.note}”
+                            </p>
+                          )}
+                          <div className="sans mt-1 text-sm text-ink/60">
+                            {formatMoney(unit)} {currency}
+                          </div>
+                          <div className="mt-2 flex items-center gap-2">
+                            <button
+                              onClick={() => setQty(key, l.qty - 1)}
+                              className="sans flex h-7 w-7 items-center justify-center rounded-full bg-paper-dark text-ink"
+                            >
+                              −
+                            </button>
+                            <span className="sans w-6 text-center font-semibold">
+                              {l.qty}
+                            </span>
+                            <button
+                              onClick={() => setQty(key, l.qty + 1)}
+                              className="sans flex h-7 w-7 items-center justify-center rounded-full bg-paper-dark text-ink"
+                            >
+                              +
+                            </button>
+                            <span className="sans ml-auto font-semibold text-ink">
+                              {formatMoney(lineTotal(unit, l.qty))} {currency}
+                            </span>
+                          </div>
                         </div>
-                        <div className="sans mt-1 text-sm text-ink/60">
-                          {l.item.price} {currency}
-                        </div>
-                        <div className="mt-2 flex items-center gap-2">
-                          <button
-                            onClick={() => setQty(l.item.id, l.qty - 1)}
-                            className="sans flex h-7 w-7 items-center justify-center rounded-full bg-paper-dark text-ink"
-                          >
-                            −
-                          </button>
-                          <span className="sans w-6 text-center font-semibold">
-                            {l.qty}
-                          </span>
-                          <button
-                            onClick={() => setQty(l.item.id, l.qty + 1)}
-                            className="sans flex h-7 w-7 items-center justify-center rounded-full bg-paper-dark text-ink"
-                          >
-                            +
-                          </button>
-                          <span className="sans ml-auto font-semibold text-ink">
-                            {l.qty * l.item.price} {currency}
-                          </span>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>
@@ -175,13 +211,13 @@ export default function Cart({
                     {t("total")} ({count} {t("items")})
                   </span>
                   <span className="serif text-2xl font-bold text-ink">
-                    {total} {currency}
+                    {formatMoney(total)} {currency}
                   </span>
                 </div>
                 <button
                   onClick={submit}
                   disabled={sending}
-                  className="sans w-full rounded-xl bg-accent py-3.5 font-semibold text-[#17130d] transition hover:brightness-110 disabled:opacity-50"
+                  className="sans w-full rounded-xl bg-accent py-3.5 font-semibold text-(--on-accent) transition hover:brightness-110 disabled:opacity-50"
                 >
                   {sending ? t("sending") : t("confirmOrder")}
                 </button>

@@ -33,7 +33,7 @@ export async function updateSession(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const isProtected = path.startsWith("/dashboard");
-  const isAuthPage = path === "/login" || path === "/signup";
+  const isAuthPage = path === "/login";
 
   // Giriş yapmamış kullanıcı korumalı sayfaya giderse -> /login
   if (!user && isProtected) {

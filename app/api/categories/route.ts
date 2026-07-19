@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getCurrentBusiness } from "@/lib/business";
+import { getCurrentBusiness, cleanI18n, legacyFromI18n } from "@/lib/business";
 
 export const dynamic = "force-dynamic";
 
@@ -9,7 +9,10 @@ export async function POST(req: Request) {
   const b = await req.json();
   const business = await getCurrentBusiness();
   if (!business) return NextResponse.json({ error: "Oturum yok" }, { status: 401 });
-  if (!b.name?.trim())
+
+  const nameI18n = cleanI18n(b.nameI18n);
+  const name = legacyFromI18n(nameI18n) || String(b.name ?? "");
+  if (!name.trim())
     return NextResponse.json({ error: "İsim gerekli" }, { status: 400 });
 
   const supabase = await createClient();
@@ -17,7 +20,8 @@ export async function POST(req: Request) {
     .from("categories")
     .insert({
       business_id: business.id,
-      name: String(b.name),
+      name,
+      name_i18n: nameI18n ?? null,
       cover_src:
         String(b.coverSrc ?? "") ||
         "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",
@@ -39,6 +43,12 @@ export async function PATCH(req: Request) {
   if (b.name !== undefined) patch.name = String(b.name);
   if (b.coverSrc !== undefined) patch.cover_src = String(b.coverSrc);
   if (b.coverVideo !== undefined) patch.cover_video = String(b.coverVideo);
+  if (b.nameI18n !== undefined) {
+    const ni = cleanI18n(b.nameI18n);
+    patch.name_i18n = ni ?? null;
+    const legacy = legacyFromI18n(ni);
+    if (legacy) patch.name = legacy;
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase

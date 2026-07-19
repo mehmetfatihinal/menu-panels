@@ -37,9 +37,13 @@ export async function POST(req: Request) {
   const admin = createAdminClient();
   const { error } = await admin.auth.admin.updateUserById(user.id, updates);
   if (error) {
-    const msg = error.message?.includes("already")
+    // GoTrue e-posta çakışmasını bazen boş mesajla döndürüyor -> code'a da bak
+    const isDup =
+      (error as { code?: string }).code === "email_exists" ||
+      (typeof error.message === "string" && error.message.includes("already"));
+    const msg = isDup
       ? "Bu e-posta başka bir hesapta kayıtlı."
-      : error.message || "Güncellenemedi.";
+      : (typeof error.message === "string" && error.message) || "Güncellenemedi.";
     return NextResponse.json({ error: msg }, { status: 400 });
   }
 

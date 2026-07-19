@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { Menu, Order } from "@/lib/types";
 import { StatusBadge } from "./Overview";
-import { useLang, type TKey } from "@/lib/i18n";
+import { useLang, pickLang, type TKey } from "@/lib/i18n";
 
 const FILTERS: { key: "hepsi" | Order["status"]; label: TKey }[] = [
   { key: "hepsi", label: "fAll" },
@@ -16,7 +16,7 @@ export default function OrdersManager() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [currency, setCurrency] = useState("₺");
   const [filter, setFilter] = useState<"hepsi" | Order["status"]>("hepsi");
-  const { t } = useLang();
+  const { t, lang } = useLang();
 
   const load = async () => {
     const [o, m] = await Promise.all([
@@ -93,11 +93,32 @@ export default function OrdersManager() {
                 </div>
               </div>
 
-              <ul className="mt-3 space-y-1 border-t border-gray-100 pt-3 text-sm text-gray-600">
-                {o.lines.map((l) => (
-                  <li key={l.id} className="flex justify-between">
-                    <span>{l.qty}× {l.name}</span>
-                    <span>{l.price * l.qty} {currency}</span>
+              <ul className="mt-3 space-y-2 border-t border-gray-100 pt-3 text-sm text-gray-600">
+                {o.lines.map((l, i) => (
+                  <li key={`${l.id ?? "x"}-${i}`}>
+                    <div className="flex justify-between">
+                      <span>{l.qty}× {l.name}</span>
+                      <span>
+                        {l.line_total ?? (l.price ?? 0) * l.qty} {currency}
+                      </span>
+                    </div>
+                    {l.options && l.options.length > 0 && (
+                      <ul className="mt-0.5 pl-4 text-xs text-gray-400">
+                        {l.options.map((op, j) => (
+                          <li key={j}>
+                            + {pickLang(op.choice_name_i18n, "", lang)}
+                            {op.price_delta > 0
+                              ? ` (+${op.price_delta} ${currency})`
+                              : ""}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {l.note && (
+                      <div className="pl-4 text-xs italic text-gray-400">
+                        “{l.note}”
+                      </div>
+                    )}
                   </li>
                 ))}
               </ul>

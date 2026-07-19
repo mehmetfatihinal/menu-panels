@@ -14,6 +14,7 @@ create table if not exists menupanels.businesses (
   tagline     text default '',
   currency    text default '₺',
   logo_url    text default '',
+  default_lang text not null default 'tr',   -- menü açılış dili (kayıtlı tercih yoksa)
   created_at  timestamptz default now()
 );
 
@@ -22,6 +23,7 @@ create table if not exists menupanels.categories (
   id           uuid primary key default gen_random_uuid(),
   business_id  uuid not null references menupanels.businesses(id) on delete cascade,
   name         text not null,
+  name_i18n    jsonb,                     -- {"tr":"...","de":"...","en":"..."} (opsiyonel)
   cover_src    text default '',
   cover_video  text default '',
   sort_order   int  default 0,
@@ -34,12 +36,17 @@ create table if not exists menupanels.products (
   id           uuid primary key default gen_random_uuid(),
   business_id  uuid not null references menupanels.businesses(id) on delete cascade,
   category_id  uuid not null references menupanels.categories(id) on delete cascade,
+  code         text,                      -- menüdeki ürün numarası (opsiyonel), ör. "70"
   name         text not null,
+  name_i18n        jsonb,                 -- {"tr":"...","de":"...","en":"..."} (opsiyonel)
   description  text default '',
+  description_i18n jsonb,                 -- {"tr":"...","de":"...","en":"..."} (opsiyonel)
   price        numeric(10,2) default 0,
   image        text default '',
   available    boolean default true,
   tags         text[] default '{}',
+  allergens    text[] default '{}',       -- alerjen/katkı kodları: ["a","c","g","4","7"]
+  options      jsonb not null default '[]'::jsonb,  -- ek seçenek grupları (grup dizisi); boş = eski davranış
   sort_order   int default 0,
   created_at   timestamptz default now()
 );
