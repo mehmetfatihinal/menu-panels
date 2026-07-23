@@ -11,11 +11,14 @@ export default function Overview() {
   const { t } = useLang();
 
   const load = async () => {
-    const [m, o] = await Promise.all([
-      fetch("/api/menu", { cache: "no-store" }).then((r) => r.json()),
-      fetch("/api/orders", { cache: "no-store" }).then((r) => r.json()),
-    ]);
+    const m = await fetch("/api/menu", { cache: "no-store" }).then((r) => r.json());
     setMenu(m);
+    // Sadece menü modunda sipariş verisi çekilmez
+    if (m?.restaurant?.ordersEnabled === false) {
+      setOrders([]);
+      return;
+    }
+    const o = await fetch("/api/orders", { cache: "no-store" }).then((r) => r.json());
     setOrders(o.orders);
   };
 
@@ -31,13 +34,16 @@ export default function Overview() {
   const newOrders = orders.filter((o) => o.status === "yeni").length;
   const products = menu?.categories.flatMap((c) => c.items) ?? [];
   const currency = menu?.restaurant.currency ?? "₺";
+  const ordersEnabled = menu?.restaurant.ordersEnabled !== false;
 
-  const stats = [
+  const allStats = [
     { label: t("statTodayOrders"), value: todays.length, sub: `${orders.length} ${t("subTotal")}`, color: "text-blue-600" },
     { label: t("statTodayRevenue"), value: `${revenue} ${currency}`, sub: t("subToday"), color: "text-emerald-600" },
     { label: t("statNewOrders"), value: newOrders, sub: t("subWaiting"), color: "text-accent" },
     { label: t("statProdCat"), value: `${products.length} / ${menu?.categories.length ?? 0}`, sub: `${products.filter((p) => !p.available).length} ${t("subClosed")}`, color: "text-amber-600" },
   ];
+  // Sadece menü modunda sipariş/ciro kartlarını gizle, yalnızca Ürün/Kategori kalsın
+  const stats = ordersEnabled ? allStats : allStats.slice(3);
 
   return (
     <div className="p-4 md:p-8">
@@ -60,10 +66,13 @@ export default function Overview() {
 
       <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
         <QuickLink href="/dashboard/menu" title={t("navMenu")} desc={t("quickMenuDesc")} open={t("openArrow")} />
-        <QuickLink href="/dashboard/masalar" title={t("navTables")} desc={t("quickTablesDesc")} open={t("openArrow")} />
-        <QuickLink href="/dashboard/siparisler" title={t("navOrders")} desc={t("quickOrdersDesc")} open={t("openArrow")} />
+        <QuickLink href="/dashboard/masalar" title={ordersEnabled ? t("navTables") : t("menuQr")} desc={t("quickTablesDesc")} open={t("openArrow")} />
+        {ordersEnabled && (
+          <QuickLink href="/dashboard/siparisler" title={t("navOrders")} desc={t("quickOrdersDesc")} open={t("openArrow")} />
+        )}
       </div>
 
+      {ordersEnabled && (
       <div className="card mt-6">
         <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
           <h2 className="font-semibold">{t("recentOrders")}</h2>
@@ -102,6 +111,7 @@ export default function Overview() {
           </table>
         )}
       </div>
+      )}
     </div>
   );
 }

@@ -29,6 +29,7 @@ export type BusinessRow = {
   currency: string;
   logo_url: string;
   default_lang?: string;
+  orders_enabled?: boolean;
 };
 
 // Supabase kayıtlarını uygulamanın Menu tipine dönüştürür
@@ -73,6 +74,7 @@ export function buildMenu(
       currency: business.currency || "₺",
       logoUrl: business.logo_url || "",
       defaultLang: ((business.default_lang as Lang) || "tr") as Lang,
+      ordersEnabled: business.orders_enabled ?? true,
     },
     categories: cats,
   };

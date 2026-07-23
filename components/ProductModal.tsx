@@ -18,10 +18,12 @@ import { allergenLabel } from "@/lib/allergens";
 export default function ProductModal({
   item,
   currency,
+  ordersEnabled = true,
   onClose,
 }: {
   item: MenuItem | null;
   currency: string;
+  ordersEnabled?: boolean;
   onClose: () => void;
 }) {
   const { add } = useCart();
@@ -179,7 +181,7 @@ export default function ProductModal({
                 </div>
               )}
 
-              {groups.length > 0 && (
+              {ordersEnabled && groups.length > 0 && (
                 <div className="mt-4 space-y-4 border-t border-ink/10 pt-4">
                   {groups.map((g) => {
                     const picked = sel[g.id] ?? [];
@@ -237,35 +239,39 @@ export default function ProductModal({
                 </div>
               )}
 
-              <div className="mt-4">
-                <label className="sans mb-1 block text-xs font-medium text-ink/60">
-                  {t("noteLabel")}
-                </label>
-                <textarea
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  maxLength={200}
-                  rows={2}
-                  placeholder={t("notePlaceholder")}
-                  className="sans w-full resize-none rounded-lg border border-ink/15 bg-transparent px-3 py-2 text-sm text-ink outline-none placeholder:text-ink/35 focus:border-accent"
-                />
-              </div>
+              {ordersEnabled && (
+                <>
+                  <div className="mt-4">
+                    <label className="sans mb-1 block text-xs font-medium text-ink/60">
+                      {t("noteLabel")}
+                    </label>
+                    <textarea
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      maxLength={200}
+                      rows={2}
+                      placeholder={t("notePlaceholder")}
+                      className="sans w-full resize-none rounded-lg border border-ink/15 bg-transparent px-3 py-2 text-sm text-ink outline-none placeholder:text-ink/35 focus:border-accent"
+                    />
+                  </div>
 
-              <button
-                disabled={!item.available || !complete}
-                onClick={() => {
-                  add(item, { selections, note });
-                  setAdded(true);
-                  setTimeout(() => setAdded(false), 1200);
-                }}
-                className="sans mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 font-semibold text-[#17130d] transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
-              >
-                {item.available
-                  ? added
-                    ? t("added")
-                    : `${t("addToCart")} · ${formatMoney(unit)} ${currency}`
-                  : t("cannotOrder")}
-              </button>
+                  <button
+                    disabled={!item.available || !complete}
+                    onClick={() => {
+                      add(item, { selections, note });
+                      setAdded(true);
+                      setTimeout(() => setAdded(false), 1200);
+                    }}
+                    className="sans mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 font-semibold text-[#17130d] transition enabled:hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    {item.available
+                      ? added
+                        ? t("added")
+                        : `${t("addToCart")} · ${formatMoney(unit)} ${currency}`
+                      : t("cannotOrder")}
+                  </button>
+                </>
+              )}
             </div>
           </motion.div>
         </motion.div>

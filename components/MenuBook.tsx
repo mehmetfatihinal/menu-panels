@@ -22,6 +22,7 @@ type Props = {
   menu: Menu;
   onOpen: (item: MenuItem) => void;
   onCategoryChange: (i: number) => void;
+  ordersEnabled?: boolean;
 };
 
 // Tek bir kitap yaprağı (react-pageflip her sayfayı forwardRef ister)
@@ -40,7 +41,7 @@ const Page = forwardRef<
 Page.displayName = "Page";
 
 const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
-  { menu, onOpen, onCategoryChange },
+  { menu, onOpen, onCategoryChange, ordersEnabled = true },
   ref
 ) {
   const bookRef = useRef<any>(null);
@@ -148,6 +149,7 @@ const MenuBook = forwardRef<MenuBookHandle, Props>(function MenuBook(
             cat={cat}
             currency={currency}
             onOpen={onOpen}
+            ordersEnabled={ordersEnabled}
           />
         </Page>,
       ])}
@@ -219,10 +221,12 @@ function MenuPage({
   cat,
   currency,
   onOpen,
+  ordersEnabled,
 }: {
   cat: Category;
   currency: string;
   onOpen: (item: MenuItem) => void;
+  ordersEnabled: boolean;
 }) {
   const { lang } = useLang();
   return (
@@ -238,6 +242,7 @@ function MenuPage({
             item={item}
             currency={currency}
             onOpen={onOpen}
+            ordersEnabled={ordersEnabled}
           />
         ))}
       </ul>
@@ -249,10 +254,12 @@ function ItemRow({
   item,
   currency,
   onOpen,
+  ordersEnabled,
 }: {
   item: MenuItem;
   currency: string;
   onOpen: (item: MenuItem) => void;
+  ordersEnabled: boolean;
 }) {
   const { add } = useCart();
   const { t, lang } = useLang();
@@ -320,22 +327,24 @@ function ItemRow({
           {pickLang(item.descriptionI18n, item.description, lang)}
         </p>
       </div>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          // Seçenekli ürünlerde doğrudan ekleme yerine modalı aç (zorunlu seçim gerekebilir)
-          if (item.options && item.options.length) {
-            onOpen(item);
-            return;
-          }
-          add(item);
-        }}
-        disabled={!item.available}
-        className="sans flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-[#17130d] transition enabled:hover:brightness-110 disabled:bg-white/10 disabled:text-white/30"
-        aria-label="Sepete ekle"
-      >
-        +
-      </button>
+      {ordersEnabled && (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            // Seçenekli ürünlerde doğrudan ekleme yerine modalı aç (zorunlu seçim gerekebilir)
+            if (item.options && item.options.length) {
+              onOpen(item);
+              return;
+            }
+            add(item);
+          }}
+          disabled={!item.available}
+          className="sans flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-accent text-lg font-bold text-[#17130d] transition enabled:hover:brightness-110 disabled:bg-white/10 disabled:text-white/30"
+          aria-label="Sepete ekle"
+        >
+          +
+        </button>
+      )}
     </li>
   );
 }

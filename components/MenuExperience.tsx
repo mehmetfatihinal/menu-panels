@@ -58,6 +58,8 @@ function Inner({
 
   const categories = menu.categories;
   const currency = menu.restaurant.currency;
+  // Sadece menü modu: sepet/sipariş kapalı (bayrak yoksa açık kabul edilir)
+  const ordersEnabled = menu.restaurant.ordersEnabled !== false;
 
   // Admin stok değişikliklerini yansıtmak için hafif güncelleme
   // (yalnızca içerik gerçekten değiştiyse -> kitap gereksiz yere sıfırlanmaz)
@@ -93,22 +95,24 @@ function Inner({
         <div className="flex flex-shrink-0 items-center gap-1.5">
           <LangSwitcher />
           <AudioController />
-          <button
-            onClick={() => setCartOpen(true)}
-            className="sans relative flex h-11 items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3.5 text-white backdrop-blur transition hover:bg-black/50"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="9" cy="21" r="1" />
-              <circle cx="20" cy="21" r="1" />
-              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-            </svg>
-            <span className="hidden text-sm font-semibold sm:inline">{t("cart")}</span>
-            {count > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-[#17130d]">
-                {count}
-              </span>
-            )}
-          </button>
+          {ordersEnabled && (
+            <button
+              onClick={() => setCartOpen(true)}
+              className="sans relative flex h-11 items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3.5 text-white backdrop-blur transition hover:bg-black/50"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+              </svg>
+              <span className="hidden text-sm font-semibold sm:inline">{t("cart")}</span>
+              {count > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-accent px-1 text-[11px] font-bold text-[#17130d]">
+                  {count}
+                </span>
+              )}
+            </button>
+          )}
         </div>
       </header>
 
@@ -138,6 +142,7 @@ function Inner({
               menu={menu}
               onOpen={setSelected}
               onCategoryChange={setActive}
+              ordersEnabled={ordersEnabled}
             />
 
             {/* Sayfa çevirme okları (mobilde içeride, masaüstünde dışarıda) */}
@@ -166,15 +171,18 @@ function Inner({
       <ProductModal
         item={selected}
         currency={currency}
+        ordersEnabled={ordersEnabled}
         onClose={() => setSelected(null)}
       />
-      <Cart
-        table={table}
-        slug={slug}
-        currency={currency}
-        open={cartOpen}
-        onClose={() => setCartOpen(false)}
-      />
+      {ordersEnabled && (
+        <Cart
+          table={table}
+          slug={slug}
+          currency={currency}
+          open={cartOpen}
+          onClose={() => setCartOpen(false)}
+        />
+      )}
     </div>
   );
 }

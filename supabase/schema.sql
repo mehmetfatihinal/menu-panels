@@ -15,6 +15,7 @@ create table if not exists menupanels.businesses (
   currency    text default '₺',
   logo_url    text default '',
   default_lang text not null default 'tr',   -- menü açılış dili (kayıtlı tercih yoksa)
+  orders_enabled boolean not null default true, -- false: sadece menü (sepet/sipariş yok, tek QR)
   created_at  timestamptz default now()
 );
 

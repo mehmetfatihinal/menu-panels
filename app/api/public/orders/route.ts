@@ -18,10 +18,14 @@ export async function POST(req: Request) {
 
   const { data: business } = await supabase
     .from("businesses")
-    .select("id")
+    .select("id,orders_enabled")
     .eq("slug", slug)
     .maybeSingle();
   if (!business) return NextResponse.json({ error: "İşletme yok" }, { status: 404 });
+  // Sadece menü modunda sipariş kabul edilmez (UI zaten gizler; bu savunma katmanı).
+  if (business.orders_enabled === false) {
+    return NextResponse.json({ error: "Sipariş sistemi kapalı" }, { status: 403 });
+  }
 
   const ids = lines.map((l: any) => l.id);
   const { data: products } = await supabase

@@ -13,6 +13,7 @@ export default function SettingsForm() {
     tagline: "",
     currency: "₺",
     logo_url: "",
+    orders_enabled: true,
   });
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -31,6 +32,7 @@ export default function SettingsForm() {
           tagline: m.restaurant.tagline,
           currency: m.restaurant.currency,
           logo_url: m.restaurant.logoUrl ?? "",
+          orders_enabled: m.restaurant.ordersEnabled !== false,
         })
       );
     // mevcut e-postayı doldur
@@ -155,6 +157,38 @@ export default function SettingsForm() {
               <p className="mt-1 text-[11px] text-gray-400">{t("logoHint")}</p>
             </div>
           </div>
+        </div>
+
+        {/* Sipariş sistemi — açık: sipariş + masaya özel QR / kapalı: sadece menü + tek QR */}
+        <div className="border-t border-gray-100 pt-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <span className="block text-sm font-medium text-gray-800">
+                {t("orderingSystem")}
+              </span>
+              <span className="mt-0.5 block text-xs text-gray-500">
+                {form.orders_enabled ? t("orderingOn") : t("orderingOff")}
+              </span>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={form.orders_enabled}
+              onClick={() =>
+                setForm({ ...form, orders_enabled: !form.orders_enabled })
+              }
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition ${
+                form.orders_enabled ? "bg-accent" : "bg-gray-300"
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition ${
+                  form.orders_enabled ? "translate-x-5" : "translate-x-0.5"
+                }`}
+              />
+            </button>
+          </div>
+          <p className="mt-2 text-[11px] text-gray-400">{t("orderingHint")}</p>
         </div>
 
         <div className="flex items-center gap-3 pt-2">

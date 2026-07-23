@@ -40,6 +40,7 @@ export type Menu = {
     currency: string;
     logoUrl?: string;
     defaultLang?: Lang; // menü açılış dili (kayıtlı tercih yoksa)
+    ordersEnabled?: boolean; // false: sadece menü modu (sepet/sipariş yok)
   };
   categories: Category[];
 };

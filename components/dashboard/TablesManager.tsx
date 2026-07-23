@@ -2,7 +2,7 @@
 
 import { QRCodeCanvas } from "qrcode.react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLang } from "@/lib/i18n";
 
 type TableRow = { id: string; label: string };
@@ -15,12 +15,15 @@ export default function TablesManager() {
   const [target, setTarget] = useState(1);
   const [copied, setCopied] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [ordersEnabled, setOrdersEnabled] = useState(true);
+  const qrWrapRef = useRef<HTMLDivElement>(null);
 
   const load = async () => {
     const res = await fetch("/api/tables", { cache: "no-store" });
     if (!res.ok) return;
     const data = await res.json();
     setSlug(data.slug);
+    setOrdersEnabled(data.ordersEnabled !== false);
     const rows = data.tables as TableRow[];
     setTables(rows);
     setTarget(Math.max(1, rows.length)); // kutu her zaman gerçek sayıyı gösterir
@@ -65,6 +68,7 @@ export default function TablesManager() {
   };
 
   const url = (label: string) => `${origin}/r/${slug}/masa/${label}`;
+  const menuQrUrl = `${origin}/r/${slug}/menu`;
 
   const copy = (label: string) => {
     navigator.clipboard?.writeText(url(label));
@@ -72,13 +76,37 @@ export default function TablesManager() {
     setTimeout(() => setCopied(null), 1500);
   };
 
+  const copyMenu = () => {
+    navigator.clipboard?.writeText(menuQrUrl);
+    setCopied("__menu__");
+    setTimeout(() => setCopied(null), 1500);
+  };
+
+  // Tek "Menü QR"yi PNG olarak indir
+  const downloadQr = () => {
+    const canvas = qrWrapRef.current?.querySelector("canvas");
+    if (!canvas) return;
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = `${slug}-menu-qr.png`;
+    a.click();
+  };
+
   return (
     <div className="p-4 md:p-8">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">{t("tablesTitle")}</h1>
+          <h1 className="text-2xl font-bold">
+            {ordersEnabled ? t("tablesTitle") : t("menuQr")}
+          </h1>
           <p className="text-sm text-gray-500">
-            {t("total")} <b>{tables.length}</b> {t("tablesWord")} · {t("tablesEach")}
+            {ordersEnabled ? (
+              <>
+                {t("total")} <b>{tables.length}</b> {t("tablesWord")} · {t("tablesEach")}
+              </>
+            ) : (
+              t("menuQrDesc")
+            )}
           </p>
         </div>
         {slug && (
@@ -92,7 +120,8 @@ export default function TablesManager() {
         )}
       </div>
 
-      {/* Masa sayısı kontrolü */}
+      {/* Masa sayısı kontrolü — yalnızca sipariş açıkken */}
+      {ordersEnabled && (
       <div className="card mb-6 flex flex-wrap items-center gap-3 p-4 print:hidden">
         <span className="text-sm font-medium text-gray-600">{t("tableCountLabel")}</span>
         <div className="flex items-center overflow-hidden rounded-lg border border-gray-300">
@@ -134,8 +163,41 @@ export default function TablesManager() {
           {t("print")}
         </button>
       </div>
+      )}
 
-      {sorted.length === 0 ? (
+      {!ordersEnabled ? (
+        <div className="card mx-auto flex max-w-sm flex-col items-center p-6">
+          <div ref={qrWrapRef} className="rounded-xl bg-white p-3">
+            {origin && slug && (
+              <QRCodeCanvas value={menuQrUrl} size={220} level="M" marginSize={2} />
+            )}
+          </div>
+          <div className="mt-4 text-lg font-bold">{t("menuQr")}</div>
+          <div className="mt-1 break-all text-center text-[11px] text-gray-400">
+            /r/{slug}/menu
+          </div>
+          <div className="mt-4 flex w-full flex-wrap gap-2 print:hidden">
+            <button
+              onClick={downloadQr}
+              className="flex-1 rounded-lg bg-[#1c1712] py-2.5 text-sm font-medium text-white hover:opacity-90"
+            >
+              {t("download")}
+            </button>
+            <button
+              onClick={() => window.print()}
+              className="flex-1 rounded-lg border border-gray-300 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            >
+              {t("print")}
+            </button>
+            <button
+              onClick={copyMenu}
+              className="flex-1 rounded-lg border border-gray-200 py-2.5 text-sm text-gray-600 hover:bg-gray-50"
+            >
+              {copied === "__menu__" ? t("copied") : t("copyLink")}
+            </button>
+          </div>
+        </div>
+      ) : sorted.length === 0 ? (
         <div className="card p-10 text-center text-gray-400">{t("noTables")}</div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

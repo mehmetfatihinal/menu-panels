@@ -59,9 +59,9 @@ Fiyatlar Euro (€). Ürün adının yanındaki `(a,c,g,…)` kodları **alerjen
 | 20 | **Dürüm Döner** (a,c,g,4,7)<br>*mit Dönerfleisch, Salat & Soße* | Döner Dürüm<br>*döner eti, salata & sos ile* | Döner Wrap<br>*with döner meat, salad & sauce* | 10,50 |
 | 21 | **Dürüm Döner-Käse** (a,c,g,2,4,7)<br>*mit Dönerfleisch, Weichkäse, Salat & Soße* | Peynirli Döner Dürüm<br>*döner eti, beyaz peynir, salata & sos ile* | Döner Wrap with Cheese<br>*with döner meat, soft cheese, salad & sauce* | 11,50 |
 | 22 | **Jumbo Dürüm Döner** (a,c,g,4,7)<br>*mit Dönerfleisch, Salat & Soße* | Jumbo Döner Dürüm<br>*döner eti, salata & sos ile* | Jumbo Döner Wrap<br>*with döner meat, salad & sauce* | 12,50 |
-| 23 | **Adana Dürüm** (a,c,g)<br>*gegr. Hackfleisch mit Salat & Soße* | Adana Dürüm<br>*ızgara kıyma, salata & sos ile* | Adana Wrap<br>*grilled minced meat with salad & sauce* | 11,50 |
-| 24 | **Lammspieß Dürüm** (a,c,g)<br>*gegr. Lammspieß mit Salat & Soße* | Kuzu Şiş Dürüm<br>*ızgara kuzu şiş, salata & sos ile* | Lamb Skewer Wrap<br>*grilled lamb skewer with salad & sauce* | 12,50 |
-| 25 | **Hähnchenspieß Dürüm** (a,c,g)<br>*gegr. Hähnchenspieß mit Salat & Soße* | Tavuk Şiş Dürüm<br>*ızgara tavuk şiş, salata & sos ile* | Chicken Skewer Wrap<br>*grilled chicken skewer with salad & sauce* | 11,50 |
+| 23 | **Adana Dürüm** (a,c,g)<br>*gegrilltes Hackfleisch mit Salat & Soße* | Adana Dürüm<br>*ızgara kıyma, salata & sos ile* | Adana Wrap<br>*grilled minced meat with salad & sauce* | 11,50 |
+| 24 | **Lammspieß Dürüm** (a,c,g)<br>*gegrillter Lammspieß mit Salat & Soße* | Kuzu Şiş Dürüm<br>*ızgara kuzu şiş, salata & sos ile* | Lamb Skewer Wrap<br>*grilled lamb skewer with salad & sauce* | 12,50 |
+| 25 | **Hähnchenspieß Dürüm** (a,c,g)<br>*gegrillter Hähnchenspieß mit Salat & Soße* | Tavuk Şiş Dürüm<br>*ızgara tavuk şiş, salata & sos ile* | Chicken Skewer Wrap<br>*grilled chicken skewer with salad & sauce* | 11,50 |
 
 ---
 
@@ -85,7 +85,7 @@ Fiyatlar Euro (€). Ürün adının yanındaki `(a,c,g,…)` kodları **alerjen
 | 40 | **Pide Hackfleisch** (a,c,g)<br>*mit Tomaten, Zwiebeln, Paprika & Petersilie* | Kıymalı Pide<br>*domates, soğan, biber & maydanoz ile* | Minced Meat Pide<br>*with tomatoes, onions, peppers & parsley* | 12,00 |
 | 41 | **Pide Käse** (a,c,g,2)<br>*mit Weichkäse & Petersilie* | Peynirli Pide<br>*beyaz peynir & maydanoz ile* | Cheese Pide<br>*with soft cheese & parsley* | 11,00 |
 | 42 | **Pide Döner** (a,c,g,4,7)<br>*mit Dönerfleisch* | Dönerli Pide<br>*döner eti ile* | Döner Pide<br>*with döner meat* | 12,00 |
-| 43 | **Pide Sucuk** (a,c,g,1,3,5)<br>*mit türk. Knoblauchwurst* | Sucuklu Pide<br>*Türk sucuğu ile* | Sucuk Pide<br>*with Turkish garlic sausage* | 12,00 |
+| 43 | **Pide Sucuk** (a,c,g,1,3,5)<br>*mit türkischer Knoblauchwurst* | Sucuklu Pide<br>*Türk sucuğu ile* | Sucuk Pide<br>*with Turkish garlic sausage* | 12,00 |
 | 44 | **Pide Gemischt** (a,c,g,2)<br>*mit Dönerfleisch & Hackfleisch* | Karışık Pide<br>*döner eti & kıyma ile* | Mixed Pide<br>*with döner meat & minced meat* | 12,00 |
 | 45 | **Pide Spinat** (a,c,g,2)<br>*mit Spinat & Weichkäse* | Ispanaklı Pide<br>*ıspanak & beyaz peynir ile* | Spinach Pide<br>*with spinach & soft cheese* | 11,00 |
 | 46 | **Pide Gouda** (a,c,g,2)<br>*mit Goudakäse* | Gouda Peynirli Pide<br>*gouda peyniri ile* | Gouda Pide<br>*with Gouda cheese* | 11,00 |
@@ -112,7 +112,7 @@ Fiyatlar Euro (€). Ürün adının yanındaki `(a,c,g,…)` kodları **alerjen
 |:--:|-----------|-----------|-----------|:--:|
 | 60 | **Adana Kebap** (a,c,g)<br>*mit Reis, Salat & Soße* | Adana Kebap<br>*pirinç, salata & sos ile* | Adana Kebab<br>*with rice, salad & sauce* | 17,50 |
 | 61 | **Adana Kebap** (a,c,g)<br>*Hackfleisch auf Fladenbrotwürfeln mit Salat, Tomaten- & Joghurtsoße* | Adana Kebap<br>*pide dilimleri üzerinde kıyma, salata, domates & yoğurt sosu ile* | Adana Kebab<br>*minced meat on flatbread cubes with salad, tomato & yogurt sauce* | 19,50 |
-| 62 | **Beyti** (a,c,g)<br>*gegrill. Hackfleischspieß mit Knoblauch, Reis, Salat & Soße* | Beyti<br>*sarımsaklı ızgara kıyma şiş, pirinç, salata & sos ile* | Beyti<br>*grilled minced meat skewer with garlic, rice, salad & sauce* | 17,50 |
+| 62 | **Beyti** (a,c,g)<br>*gegrillter Hackfleischspieß mit Knoblauch, Reis, Salat & Soße* | Beyti<br>*sarımsaklı ızgara kıyma şiş, pirinç, salata & sos ile* | Beyti<br>*grilled minced meat skewer with garlic, rice, salad & sauce* | 17,50 |
 | 63 | **Beyti gerollt** (a,c,g)<br>*mit Reis, Salat & Soße* | Beyti Sarma<br>*pirinç, salata & sos ile* | Beyti (rolled)<br>*with rice, salad & sauce* | 19,50 |
 | 64 | **Hähnchenspieß** (a,c,g)<br>*mit Reis, Salat & Soße* | Tavuk Şiş<br>*pirinç, salata & sos ile* | Chicken Skewer<br>*with rice, salad & sauce* | 17,50 |
 | 65 | **Lammspieß** (a,c,g)<br>*mit Reis, Salat & Soße* | Kuzu Şiş<br>*pirinç, salata & sos ile* | Lamb Skewer<br>*with rice, salad & sauce* | 19,00 |
@@ -133,11 +133,11 @@ Fiyatlar Euro (€). Ürün adının yanındaki `(a,c,g,…)` kodları **alerjen
 | 72 | **Pizza Rindersalami** (a,c,g,2,3,4)<br>*mit Rindersalami* | Pizza Dana Salam<br>*dana salam ile* | Pizza Beef Salami<br>*with beef salami* | 12,00 |
 | 73 | **Pizza Tonno** (a,c,g,d,2)<br>*mit Thunfisch & Zwiebeln* | Pizza Tonno<br>*ton balığı & soğan ile* | Pizza Tonno<br>*with tuna & onions* | 11,00 |
 | 74 | **Pizza Döner** (a,c,g,2,4,7)<br>*mit Dönerfleisch & Zwiebeln* | Pizza Döner<br>*döner eti & soğan ile* | Pizza Döner<br>*with döner meat & onions* | 12,00 |
-| 75 | **Pizza Sucuk** (a,c,g,1,2,3,5)<br>*mit türk. Knoblauchwurst* | Pizza Sucuk<br>*Türk sucuğu ile* | Pizza Sucuk<br>*with Turkish garlic sausage* | 12,00 |
+| 75 | **Pizza Sucuk** (a,c,g,1,2,3,5)<br>*mit türkischer Knoblauchwurst* | Pizza Sucuk<br>*Türk sucuğu ile* | Pizza Sucuk<br>*with Turkish garlic sausage* | 12,00 |
 | 76 | **Pizza Spinat** (a,c,g,2)<br>*mit Spinat* | Pizza Ispanak<br>*ıspanak ile* | Pizza Spinach<br>*with spinach* | 11,00 |
 | 77 | **Pizza Mais** (a,c,g,2)<br>*mit Mais* | Pizza Mısır<br>*mısır ile* | Pizza Corn<br>*with corn* | 10,00 |
 | 78 | **Pizza Peperoni** (a,c,g,2)<br>*mit Peperoni* | Pizza Pepperoni<br>*pepperoni ile* | Pizza Peperoni<br>*with peperoni* | 11,00 |
-| 79 | **Pizza Vegetarisch** (a,c,g,2,10)<br>*mit Paprika, Peperoni, Champ., Zwiebeln & Oliven* | Vejetaryen Pizza<br>*biber, pepperoni, mantar, soğan & zeytin ile* | Vegetarian Pizza<br>*with peppers, peperoni, mushrooms, onions & olives* | 12,00 |
+| 79 | **Pizza Vegetarisch** (a,c,g,2,10)<br>*mit Paprika, Peperoni, Champignons, Zwiebeln & Oliven* | Vejetaryen Pizza<br>*biber, pepperoni, mantar, soğan & zeytin ile* | Vegetarian Pizza<br>*with peppers, peperoni, mushrooms, onions & olives* | 12,00 |
 
 > ➕ **Her ek malzeme 1,50 € · Jede weiterer Belag 1,50 € · Each additional topping 1.50 €**
 

@@ -13,9 +13,18 @@ const nav: { href: string; key: TKey }[] = [
   { href: "/dashboard/ayarlar", key: "navSettings" },
 ];
 
-export default function MobileNav({ slug }: { slug: string }) {
+export default function MobileNav({
+  slug,
+  ordersEnabled = true,
+}: {
+  slug: string;
+  ordersEnabled?: boolean;
+}) {
   const path = usePathname();
   const { t } = useLang();
+  const items = nav.filter(
+    (n) => ordersEnabled || n.href !== "/dashboard/siparisler"
+  );
   return (
     <div className="sticky top-0 z-20 border-b border-gray-200 bg-[#1c1712] md:hidden">
       <div className="flex items-center justify-between px-4 py-3">
@@ -37,7 +46,7 @@ export default function MobileNav({ slug }: { slug: string }) {
         </div>
       </div>
       <nav className="flex gap-1 overflow-x-auto px-2 pb-2">
-        {nav.map((n) => {
+        {items.map((n) => {
           const active =
             n.href === "/dashboard" ? path === "/dashboard" : path.startsWith(n.href);
           return (

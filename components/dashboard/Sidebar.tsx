@@ -13,9 +13,20 @@ const nav: { href: string; key: TKey; icon: string }[] = [
   { href: "/dashboard/ayarlar", key: "navSettings", icon: "M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-2.82 1.17V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15H4.5a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 6 8" },
 ];
 
-export default function Sidebar({ slug, name }: { slug: string; name: string }) {
+export default function Sidebar({
+  slug,
+  name,
+  ordersEnabled = true,
+}: {
+  slug: string;
+  name: string;
+  ordersEnabled?: boolean;
+}) {
   const path = usePathname();
   const { t } = useLang();
+  const items = nav.filter(
+    (n) => ordersEnabled || n.href !== "/dashboard/siparisler"
+  );
 
   return (
     <aside className="flex h-full w-full flex-col bg-[#1c1712] text-white md:w-64">
@@ -30,7 +41,7 @@ export default function Sidebar({ slug, name }: { slug: string; name: string }) 
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-2">
-        {nav.map((n) => {
+        {items.map((n) => {
           const active =
             n.href === "/dashboard"
               ? path === "/dashboard"

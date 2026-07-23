@@ -16,7 +16,11 @@ export async function GET() {
     .eq("business_id", business.id)
     .order("created_at");
 
-  return NextResponse.json({ slug: business.slug, tables: data ?? [] });
+  return NextResponse.json({
+    slug: business.slug,
+    tables: data ?? [],
+    ordersEnabled: business.orders_enabled ?? true,
+  });
 }
 
 // Masa ekle (tek label veya toplu: {count} ile 1..count)

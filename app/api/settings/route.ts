@@ -15,6 +15,7 @@ export async function PATCH(req: Request) {
   if (b.tagline !== undefined) patch.tagline = String(b.tagline);
   if (b.currency !== undefined) patch.currency = String(b.currency);
   if (b.logo_url !== undefined) patch.logo_url = String(b.logo_url);
+  if (b.orders_enabled !== undefined) patch.orders_enabled = Boolean(b.orders_enabled);
 
   const supabase = await createClient();
   const { data, error } = await supabase

@@ -18,9 +18,16 @@ export default async function DashboardLayout({
     <LangProvider>
       <div className="dashboard min-h-screen bg-gray-100 md:flex">
         <div className="hidden md:sticky md:top-0 md:block md:h-screen">
-          <Sidebar slug={business.slug} name={business.name} />
+          <Sidebar
+            slug={business.slug}
+            name={business.name}
+            ordersEnabled={business.orders_enabled ?? true}
+          />
         </div>
-        <MobileNav slug={business.slug} />
+        <MobileNav
+          slug={business.slug}
+          ordersEnabled={business.orders_enabled ?? true}
+        />
         <main className="flex-1">{children}</main>
       </div>
     </LangProvider>
