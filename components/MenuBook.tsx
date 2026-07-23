@@ -11,6 +11,7 @@ import type { Category, Menu, MenuItem } from "@/lib/types";
 import { useCart } from "@/lib/cart";
 import { useLang, pickLang } from "@/lib/i18n";
 import { playPageFlip } from "@/lib/sounds";
+import { formatMoney } from "@/lib/options";
 
 export type MenuBookHandle = {
   flipToCategory: (i: number) => void;
@@ -320,7 +321,7 @@ function ItemRow({
             {itemName}
           </h3>
           <span className="serif whitespace-nowrap text-sm font-bold text-[#c8a34c]">
-            {item.price} {currency}
+            {formatMoney(item.price)} {currency}
           </span>
         </div>
         <p className="sans line-clamp-1 text-xs text-[#c8a34c]/75">

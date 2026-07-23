@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { Menu, Order } from "@/lib/types";
 import { StatusBadge } from "./Overview";
 import { useLang, pickLang, type TKey } from "@/lib/i18n";
+import { formatMoney } from "@/lib/options";
 
 const FILTERS: { key: "hepsi" | Order["status"]; label: TKey }[] = [
   { key: "hepsi", label: "fAll" },
@@ -99,7 +100,7 @@ export default function OrdersManager() {
                     <div className="flex justify-between">
                       <span>{l.qty}× {l.name}</span>
                       <span>
-                        {l.line_total ?? (l.price ?? 0) * l.qty} {currency}
+                        {formatMoney(l.line_total ?? (l.price ?? 0) * l.qty)} {currency}
                       </span>
                     </div>
                     {l.options && l.options.length > 0 && (
@@ -108,7 +109,7 @@ export default function OrdersManager() {
                           <li key={j}>
                             + {pickLang(op.choice_name_i18n, "", lang)}
                             {op.price_delta > 0
-                              ? ` (+${op.price_delta} ${currency})`
+                              ? ` (+${formatMoney(op.price_delta)} ${currency})`
                               : ""}
                           </li>
                         ))}

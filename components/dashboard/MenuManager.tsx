@@ -6,6 +6,7 @@ import type { OptionGroup, OptionChoice } from "@/lib/options";
 import UploadButton from "./UploadButton";
 import BulkImport from "./BulkImport";
 import { useLang, pickLang, type Lang } from "@/lib/i18n";
+import { formatMoney } from "@/lib/options";
 
 // Panelde düzenlenecek diller (görüntüleme sırası)
 const LANG_ORDER: Lang[] = ["tr", "de", "en"];
@@ -258,7 +259,7 @@ export default function MenuManager() {
                     </div>
                   </div>
                   <div className="w-20 text-right font-semibold">
-                    {item.price} {currency}
+                    {formatMoney(item.price)} {currency}
                   </div>
                   <button
                     onClick={() => toggle(item)}

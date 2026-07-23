@@ -126,7 +126,7 @@ export default function ProductModal({
                   {itemName}
                 </h2>
                 <div className="serif whitespace-nowrap text-2xl font-bold text-accent">
-                  {item.price} {currency}
+                  {formatMoney(item.price)} {currency}
                 </div>
               </div>
 
